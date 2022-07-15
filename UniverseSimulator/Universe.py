@@ -276,11 +276,23 @@ class Universe():
                 for i in range(int(df_temp[col])):
                                
                     # Crate agent
+                    # Other values? distributions?
                     the_agent = Agents(
                             identifier = agent_idx,
                             sex = sex,
                             age = random.randint(init, end),
                             population_centre = population,
+                            mdt = np.random.triangular(population.minmdt, population.meanmdt, population.maxmdt),
+                            pendi = np.random.triangular(population.minpendi, population.meanpendi, population.maxpendi),
+                            carretn = np.random.triangular(population.mincarretn, population.meancarretn, population.maxcarretn),
+                            aut = np.random.triangular(population.mindisaut, population.meandisaut, population.maxdisaut),
+                            ferr = np.random.triangular(population.mindisferr, population.meandisferr, population.maxdisferr),
+                            dis10m = np.random.triangular(population.mindisn10m, population.meandisn10m, population.maxdisn10m),
+                            hospi = population.disthospit,
+                            farma = population.distfarma,
+                            ceduc = population.distceduc,
+                            curgh = population.distcurgh,
+                            atprim = population.distatprim
                             )
                     
                     ############### TRYING TO BUILD UP FAMILES ###############

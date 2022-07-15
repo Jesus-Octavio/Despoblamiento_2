@@ -17,18 +17,40 @@ from Family_version_3 import Fam_kids
 
 class Agents():
     
-    def __init__(self, identifier, sex, age, population_centre
-                 ):
+    def __init__(self, identifier, sex, age, population_centre,
+                 mdt, pendi, carretn, aut, ferr, dis10m,
+                 hospi, farma, ceduc, curgh, atprim):
         # AGENTS/PEOPLE CONSTRUCTOR
         
-        self.person_id = identifier
-        self.sex = sex
-        self.age = age
+        self.person_id         = identifier
+        self.sex               = sex
+        self.age               = age
         self.population_centre = population_centre
         
         # Data about the agent's location
         # RELATED TO FEATURES OF THEIR POPULATION CENTRE
-        #self.
+        # Height abput the sea level
+        self.mdt      = mdt
+        # Slope
+        self.pendi    = pendi
+        # Distance to road
+        self.carretn  = carretn
+        # Distance to highway
+        self.aut      = aut
+        # Distance to railroads
+        self.ferr     = ferr
+        # Distamce to 10k population centre
+        self.dis10m   = dis10m
+        # Distance to hospital
+        self.hospi    = hospi
+        # Distamce to pharmacy
+        self.farma    = farma
+        # Distance to education centre
+        self.ceduc    = ceduc
+        # Distance to emergency centre
+        self.curgh    = curgh
+        # Distance to primary healthcare centre
+        self.atptim   = atprim
         
         # Features about the place each person is living in
         self.features = 1
