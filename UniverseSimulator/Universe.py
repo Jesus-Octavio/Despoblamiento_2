@@ -136,21 +136,33 @@ class Universe():
             longitud    = df_temp_2["LONGITUD_E"]
             latitud     = df_temp_2["LATITUD_ET"]
             # Height about the sea level
+            minmdt      = df_temp_2["MINMDT"]
+            maxmdt      = df_temp_2["MAXMDT"] 
             meanmdt     = df_temp_2["MEANMDT"]
             stdmdt      = df_temp_2["STDMDT"]
             # Slope
+            minpendi    = df_temp_2["MINPENDI"]
+            maxpendi    = df_temp_2["MAXPENDI"]
             meanpendi   = df_temp_2["MEANPENDI"]
             stdpendi    = df_temp_2["STDPENDI"]
             # Distance to 10k population centre
+            mindisn10m  = df_temp_2["MINDISN10M"]
+            maxdisn10m  = df_temp_2["MAXDISN10M"]
             meandisn10m = df_temp_2["MEANDISN10M"]
             stddisn10m  = df_temp_2["STDDISN10M"]
             # Distance to road
+            mincarretn  = df_temp_2["MINCARRETN"]
+            maxcarretn  = df_temp_2["MAXCARRETN"]
             meancarretn = df_temp_2["MEANCARRETN"]
             stdcarretn  = df_temp_2["STDCARRETN"]
             # Distance to highway
+            mindisaut   = df_temp_2["MINDISAUT"]
+            maxdisaut   = df_temp_2["MAXDISAUT"]
             meandisaut  = df_temp_2["MEANDISAUT"]
             stddisaut   = df_temp_2["STDDISAUT"] 
             # Distance to railroad
+            mindisferr  = df_temp_2["MINDISFERR"] 
+            maxdisferr  = df_temp_2["MAXDISFERR"] 
             meandisferr = df_temp_2["MEANDISFERR"]
             stddisferr  = df_temp_2["STDDISFERR"]
             # Distance to hospitals
@@ -185,16 +197,28 @@ class Universe():
                     num_women   = 0,
                     longitud    = longitud,
                     latitud     = latitud,
+                    minmdt      = minmdt,
+                    maxmdt      = maxmdt,
                     meanmdt     = meanmdt,
                     stdmdt      = stdmdt,
+                    minpendi    = minpendi,
+                    maxpendi    = maxpendi,
                     meanpendi   = meanpendi,
                     stdpendi    = stdpendi,
+                    mindisn10m  = mindisn10m,
+                    maxdisn10m  = maxdisn10m,
                     meandisn10m = meandisn10m,
                     stddisn10m  = stddisn10m,
+                    mincarretn  = mincarretn,
+                    maxcarretn  = maxcarretn,
                     meancarretn = meancarretn,
                     stdcarretn  = stdcarretn,
+                    mindisaut   = mindisaut,
+                    maxdisaut   = maxdisaut,
                     meandisaut  = meandisaut,
                     stddisaut   = stddisaut,
+                    mindisferr  = mindisferr,
+                    maxdisferr  = maxdisferr,
                     meandisferr = meandisferr,
                     stddisferr  = stddisferr,
                     disthospit  = disthospit, 
@@ -218,6 +242,7 @@ class Universe():
     
     
     def AgentsBuilder(self):
+        # Method to build up agents
         global agent_idx
         agents = []
         age_cols = [col for col in self.main_dataframe.columns if col.startswith('Edad_')]
@@ -230,16 +255,17 @@ class Universe():
             # Select subdataframe
             df_temp = self.main_dataframe.\
                 query('CODMUN == ' + str(population.population_id))[age_cols]
+                
             for col in df_temp.columns:
                 sex = col.split(":")[0][-1]
                 if "-" in col:
                     init = int(col.split(":")[1].split("-")[0])
-                    end = int(col.split(":")[1].split("-")[1])
-                    key = str(init) + '-' + str(end)
+                    end  = int(col.split(":")[1].split("-")[1])
+                    key  = str(init) + '-' + str(end)
                 else:
                     init = int(col.split(":")[1].split(">")[1])
-                    end = 110
-                    key = ">" + str(init)
+                    end  = 110
+                    key  = ">" + str(init)
                     
                 # Update dictionay for age ranges
                 if key not in age_range[self.year + sex].keys():
@@ -250,10 +276,12 @@ class Universe():
                 for i in range(int(df_temp[col])):
                                
                     # Crate agent
-                    the_agent = Agents(identifier = agent_idx,
-                                   sex = sex,
-                                   age = random.randint(init, end),
-                                   population_centre = population)
+                    the_agent = Agents(
+                            identifier = agent_idx,
+                            sex = sex,
+                            age = random.randint(init, end),
+                            population_centre = population,
+                            )
                     
                     ############### TRYING TO BUILD UP FAMILES ###############
                     the_agent.family_role()

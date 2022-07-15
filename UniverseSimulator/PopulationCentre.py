@@ -23,12 +23,12 @@ class PopulationCentre():
     def __init__(self, year, identifier, name,
                  num_men, num_women,
                  longitud, latitud,
-                 meanmdt, stdmdt,
-                 meanpendi, stdpendi,
-                 meandisn10m, stddisn10m,
-                 meancarretn, stdcarretn,
-                 meandisaut, stddisaut,
-                 meandisferr, stddisferr,
+                 minmdt, maxmdt, meanmdt, stdmdt,
+                 minpendi, maxpendi, meanpendi, stdpendi,
+                 mindisn10m, maxdisn10m, meandisn10m, stddisn10m,
+                 mincarretn, maxcarretn, meancarretn, stdcarretn,
+                 mindisaut, maxdisaut, meandisaut, stddisaut,
+                 mindisferr, maxdisferr, meandisferr, stddisferr,
                  disthospit, 
                  distfarma,
                  distceduc,
@@ -52,16 +52,28 @@ class PopulationCentre():
         # FEATURES
         self.longitud    = longitud,
         self.latitud     = latitud
+        self.minmdt      = minmdt
+        self.maxmdt      = maxmdt
         self.meanmdt     = meanmdt
         self.stdmdt      = stdmdt
+        self.minpendi    = minpendi
+        self.maxpendi    = maxpendi
         self.meanpendi   = meanpendi
         self.stdpendi    = stdpendi
+        self.mindisn10m  = mindisn10m
+        self.maxdisn10m  = maxdisn10m
         self.meandisn10m = meandisn10m
         self.stddisn10m  = stddisn10m
+        self.mincarretn  = mincarretn
+        self.maxcarretn  = maxcarretn
         self.meancarretn = meancarretn
         self.stdcarretn  = stdcarretn
+        self.mindisaut   = mindisaut
+        self.maxdisaut   = maxdisaut
         self.meandisaut  = meandisaut
         self.stddisaut   = stddisaut
+        self.mindisferr  = mindisferr
+        self.maxdisferr  = maxdisferr
         self.meandisferr = meandisferr
         self.stddisferr  = stddisferr
         self.disthospit  = disthospit 
@@ -157,16 +169,28 @@ class PopulationCentre():
         print('--------------------------------------------------')
         print("Latitude:                                %f" % self.latitud)
         print("Longitude:                               %f" % self.longitud)
+        print("Min  height above the sea level (m):     %f" % self.minmdt)
+        print("Man  height above the sea level (m):     %f" % self.maxmdt)
         print("Mean height above the sea level (m):     %f" % self.meanmdt)
         print("Std  height above the sea level (m):     %f" % self.stdmdt)
+        print("Min  slope (m):                          %f" % self.minpendi)
+        print("Max  slope (m):                          %f" % self.maxpendi)
         print("Mean slope (m):                          %f" % self.meanpendi)
         print("Std  slope (m):                          %f" % self.stdpendi)
+        print("Min  distance to a 10k pop. centre (m):  %f" % self.mindisn10m)
+        print("Max  distance to a 10k pop. centre (m):  %f" % self.maxdisn10m)
         print("Mean distance to a 10k pop. centre (m):  %f" % self.meandisn10m)
         print("Std  distance to a 10k pop. centre (m):  %f" % self.stddisn10m)
+        print("Min  distance to road (m):               %f" % self.mincarretn)
+        print("Max  distance to road (m):               %f" % self.maxcarretn)
         print("Mean distance to road (m):               %f" % self.meancarretn)
         print("Std  distance to road (m):               %f" % self.stdcarretn)
+        print("Min  distance to highway (m):            %f" % self.mindisaut)
+        print("Max  distance to highway (m):            %f" % self.maxdisaut)
         print("Mean distance to highway (m):            %f" % self.meandisaut)
         print("Std  distance to highway (m):            %f" % self.stddisaut)
+        print("Min  distance to railroad (m):           %f" % self.mindisferr)
+        print("Max  distance to railroad (m):           %f" % self.maxdisferr)
         print("Mean distance to railroad (m):           %f" % self.meandisferr)
         print("Std  distance to railroad (m):           %f" % self.stddisferr)
         print("Mean distance to hospital (m):           %f" % self.disthospit)

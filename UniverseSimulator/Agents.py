@@ -17,14 +17,21 @@ from Family_version_3 import Fam_kids
 
 class Agents():
     
-    def __init__(self, identifier, sex, age, population_centre):
+    def __init__(self, identifier, sex, age, population_centre
+                 ):
         # AGENTS/PEOPLE CONSTRUCTOR
+        
         self.person_id = identifier
         self.sex = sex
         self.age = age
         self.population_centre = population_centre
+        
+        # Data about the agent's location
+        # RELATED TO FEATURES OF THEIR POPULATION CENTRE
+        #self.
+        
         # Features about the place each person is living in
-        self.features =1
+        self.features = 1
         # Happiness coefficient (I know this coefficient has no much sense
         # but I was trying to create a criterion to decide is s person wants to 
         # migrate or not)
