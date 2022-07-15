@@ -128,9 +128,9 @@ class Universe():
             # Select specific row
             columns_list = self.main_dataframe.columns
             df_temp   = self.main_dataframe.iloc[population]
-            print(df_temp)
+            #print(df_temp)
             df_temp_2 = self.features_dataframe.iloc[population]
-            print(df_temp_2)
+            #print(df_temp_2)
             
             
             # Select some features about the population centre
@@ -418,19 +418,26 @@ class Universe():
             # Total families with kids
             fam = fam3p + fam4p + fam5p
             
+            #print(population.population_name)
+            #print("kids  %f" % num_kids)
+            #print("fam3p %f" % fam3p)
+            #print("fam4p %f" % fam4p)
+            #print("fam5p %f" % fam5p)
+            #print("fam   %f" % fam)
+            
             # Percentage of each type
             fam3p = math.ceil(num_kids * (fam3p / fam))
             fam4p = math.ceil(num_kids * (fam4p / fam))
             fam5p = math.ceil(num_kids * (fam5p / fam))
             
             # UNCOMMIT TO CHECK RESULTS
-            print("Nº of kids: %s" % num_kids)
-            print("Nº of families with 1 kid : %s"  % fam3p)
-            print("Nº of families with 2 kids: %s" % int(math.ceil(fam4p / 2)))
-            print("Nº of families with 3 kids: %s" % int(math.ceil(fam5p / 3)))
+            #print("Nº of kids: %s" % num_kids)
+            #print("Nº of families with 1 kid : %s"  % fam3p)
+            #print("Nº of families with 2 kids: %s" % int(math.ceil(fam4p / 2)))
+            #print("Nº of families with 3 kids: %s" % int(math.ceil(fam5p / 3)))
             temp = fam3p + int(math.ceil(fam4p / 2))*2 + int(math.ceil(fam5p / 3))*3
-            print("Space for %s kids" % temp)
-            print("\n")
+            #print("Space for %s kids" % temp)
+            #print("\n")
             
             # Declare queue for families
             queue_families = deque()
@@ -1299,7 +1306,7 @@ class Universe():
         for population in self.population_centres:
             population.Print()
             ################### TRYING TO BUILD UP FAMILIES ###################
-            population.Print_families()
+            #population.Print_families()
             ###################################################################
         #for city in self.large_cities:
         #    city.Print()

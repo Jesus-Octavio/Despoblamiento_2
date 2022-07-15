@@ -271,31 +271,29 @@ class PlotPage(tk.Frame, Pages):
         
      
 if __name__ == "__main__":
-    # Toy dataframe
-    my_df = pd.read_csv("data_aumentada_years.csv")
-    my_families_df = pd.read_csv("families.csv")
-    my_features_df = pd.read_csv("my_estructura_completo.csv")
-     
-    my_df = my_df[my_df["CODMUN"].isin([39085])]
-    my_families_df = my_families_df[my_families_df["CODMUN"].isin([39085, 33042])]
-    #my_df = my_df[my_df["CODMUN"]]
+    # COMARCA 2
+    path             = "Dominio/Comarca_2/"
+    df_historic_ages = pd.read_csv(path + "df_2_historic_ages.csv")
+    df_families      = pd.read_csv(path + "df_2_families.csv")
+    df_features      = pd.read_csv(path + "df_2_infra_coords.csv")
+    year             = 2012
     
-    year = 2012
-    
-    my_universe = Universe(my_df, my_families_df, 
-                           my_features_df, year)
+    my_universe = Universe(df = df_historic_ages,
+                           df_families = df_families, 
+                           df_features = df_features,
+                           year = year)
     my_universe.Print()
 
     
         
-    for i in range(1, 4):
-        my_universe.update()
-        my_universe.Print()
+    #for i in range(1, 4):
+    #    my_universe.update()
+    #    my_universe.Print()
     
     
     #my_universe.regression_metrics()
-    app = SeaofBTCapp(universe = my_universe)
-    app.mainloop()
+    #app = SeaofBTCapp(universe = my_universe)
+    #app.mainloop()
        
 #app = SeaofBTCapp()
 #app.mainloop()
