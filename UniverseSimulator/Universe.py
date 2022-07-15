@@ -125,22 +125,44 @@ class Universe():
         # As we are reading from a datafrase (assume each population centre 
         # appears just once in the dataframe), consider each row:
         for population in range(self.main_dataframe.shape[0]):
-            # Select specific row
+            
+            # Select specific row, i..e. specific population centre
             columns_list = self.main_dataframe.columns
-            df_temp   = self.main_dataframe.iloc[population]
-            #print(df_temp)
-            df_temp_2 = self.features_dataframe.iloc[population]
-            #print(df_temp_2)
+            df_temp      = self.main_dataframe.iloc[population]
+            df_temp_2    = self.features_dataframe.iloc[population]
             
-            
-            # Select some features about the population centre
-            # Trying to compute a fits "happiness coefficient" to be able to
-            # make decisions about migrations explained later)
-            features = {"population_height_sea"  : df_temp_2["MEANMDT"],
-                       "population_dist_pop"     : df_temp_2["MEANMDT"],
-                       "populaiton_dist_highway" : df_temp_2["MEANDISAUT"],
-                       "population_dist_train"   : df_temp_2["MEANDISFERR"]}
-            
+            # Select features for the population centre
+            # To compute geodesic distance ...
+            longitud    = df_temp_2["LONGITUD_E"]
+            latitud     = df_temp_2["LATITUD_ET"]
+            # Height about the sea level
+            meanmdt     = df_temp_2["MEANMDT"]
+            stdmdt      = df_temp_2["STDMDT"]
+            # Slope
+            meanpendi   = df_temp_2["MEANPENDI"]
+            stdpendi    = df_temp_2["STDPENDI"]
+            # Distance to 10k population centre
+            meandisn10m = df_temp_2["MEANDISN10M"]
+            stddisn10m  = df_temp_2["STDDISN10M"]
+            # Distance to road
+            meancarretn = df_temp_2["MEANCARRETN"]
+            stdcarretn  = df_temp_2["STDCARRETN"]
+            # Distance to highway
+            meandisaut  = df_temp_2["MEANDISAUT"]
+            stddisaut   = df_temp_2["STDDISAUT"] 
+            # Distance to railroad
+            meandisferr = df_temp_2["MEANDISFERR"]
+            stddisferr  = df_temp_2["STDDISFERR"]
+            # Distance to hospitals
+            disthospit  = df_temp_2["DISTHOSPIT"]
+            # Distance to pharmacies
+            distfarma   = df_temp_2["DISTFARMA"]
+            # Distance to education centres
+            distceduc   = df_temp_2["DISTCEDUC"]
+            # Distance to emercengy centres
+            distcurgh   = df_temp_2["DISTCURGH"]
+            # Distance to primary healthcare centres
+            distatprim  = df_temp_2["DISTATPRIM"]
             
             
             my_cols = ["HOM" + self.year, "MUJ" + self.year,
@@ -150,24 +172,36 @@ class Universe():
             my_cols_update = ["NAT", "MOR", "SALDOTT"]
             
             d_args = {}
-            d_args["features"] = features
             for column in columns_list:
                 if column in my_cols:
                     d_args[column[:len(column)-4].lower()] = df_temp[column]
             
             # Invoke Population Center constructor
             the_population = PopulationCentre(
-                    # year
-                    year = self.year,
-                    # identifier for population centre
-                    identifier = df_temp["CODMUN"],
-                    # name for population centre
-                    name = df_temp["Nombre"],
-                    # male population
-                    num_men = 0,
-                    # female population
-                    num_women = 0,
-                    # rest of arguments
+                    year        = self.year,
+                    identifier  = df_temp["CODMUN"],
+                    name        = df_temp["Nombre"],
+                    num_men     = 0,
+                    num_women   = 0,
+                    longitud    = longitud,
+                    latitud     = latitud,
+                    meanmdt     = meanmdt,
+                    stdmdt      = stdmdt,
+                    meanpendi   = meanpendi,
+                    stdpendi    = stdpendi,
+                    meandisn10m = meandisn10m,
+                    stddisn10m  = stddisn10m,
+                    meancarretn = meancarretn,
+                    stdcarretn  = stdcarretn,
+                    meandisaut  = meandisaut,
+                    stddisaut   = stddisaut,
+                    meandisferr = meandisferr,
+                    stddisferr  = stddisferr,
+                    disthospit  = disthospit, 
+                    distfarma   = distfarma,
+                    distceduc   = distceduc,
+                    distcurgh   = distcurgh,
+                    distatprim  = distatprim,
                     **d_args)
 
             # Add specific population to the universe
@@ -1305,6 +1339,7 @@ class Universe():
         print("\n")
         for population in self.population_centres:
             population.Print()
+            population.Print_features()
             ################### TRYING TO BUILD UP FAMILIES ###################
             #population.Print_families()
             ###################################################################

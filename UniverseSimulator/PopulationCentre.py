@@ -22,7 +22,19 @@ class PopulationCentre():
     
     def __init__(self, year, identifier, name,
                  num_men, num_women,
-                 hom, muj, nat, mor, saldott, features):
+                 longitud, latitud,
+                 meanmdt, stdmdt,
+                 meanpendi, stdpendi,
+                 meandisn10m, stddisn10m,
+                 meancarretn, stdcarretn,
+                 meandisaut, stddisaut,
+                 meandisferr, stddisferr,
+                 disthospit, 
+                 distfarma,
+                 distceduc,
+                 distcurgh,
+                 distatprim,
+                 hom, muj, nat, mor, saldott):
         
         self.year = year
         self.population_id = identifier
@@ -34,10 +46,30 @@ class PopulationCentre():
         self.natality = nat
         self.mortality = mor
         self.saldo_migratorio_total = saldott
-        self.features = features
         self.inhabitants = []
         #self.inhabitant = inhabitants
         
+        # FEATURES
+        self.longitud    = longitud,
+        self.latitud     = latitud
+        self.meanmdt     = meanmdt
+        self.stdmdt      = stdmdt
+        self.meanpendi   = meanpendi
+        self.stdpendi    = stdpendi
+        self.meandisn10m = meandisn10m
+        self.stddisn10m  = stddisn10m
+        self.meancarretn = meancarretn
+        self.stdcarretn  = stdcarretn
+        self.meandisaut  = meandisaut
+        self.stddisaut   = stddisaut
+        self.meandisferr = meandisferr
+        self.stddisferr  = stddisferr
+        self.disthospit  = disthospit 
+        self.distfarma   = distfarma
+        self.distceduc   = distceduc
+        self.distcurgh   = distcurgh
+        self.distatprim  = distatprim
+                    
         # Mean happiness for inhabitants
         self.mean_happiness = self.update_mean_happiness()
         
@@ -109,17 +141,40 @@ class PopulationCentre():
       
         
     def Print(self):
-        print('---------------------------------------------------')
-        print('|           Population centre ' + str(self.population_id) +'               |')
-        print('---------------------------------------------------')
+        print('###################################################')
+        print('#           Population centre ' + str(self.population_id) +'               #')
+        print('###################################################')
         print("Population Centre  : %s." % self.population_name)
         print("Total  inhabitants : %s." % (self.num_men + self.num_women))
         print("Male   inhabitants : %s." % self.num_men)
         print("Female inhabitants : %s." % self.num_women)
+        #print("\n")
         
-        
+    
+    def Print_features(self):
+        print('--------------------------------------------------')
+        print('|                    FEATURES                    |')
+        print('--------------------------------------------------')
+        print("Latitude:                                %f" % self.latitud)
+        print("Longitude:                               %f" % self.longitud)
+        print("Mean height above the sea level (m):     %f" % self.meanmdt)
+        print("Std  height above the sea level (m):     %f" % self.stdmdt)
+        print("Mean slope (m):                          %f" % self.meanpendi)
+        print("Std  slope (m):                          %f" % self.stdpendi)
+        print("Mean distance to a 10k pop. centre (m):  %f" % self.meandisn10m)
+        print("Std  distance to a 10k pop. centre (m):  %f" % self.stddisn10m)
+        print("Mean distance to road (m):               %f" % self.meancarretn)
+        print("Std  distance to road (m):               %f" % self.stdcarretn)
+        print("Mean distance to highway (m):            %f" % self.meandisaut)
+        print("Std  distance to highway (m):            %f" % self.stddisaut)
+        print("Mean distance to railroad (m):           %f" % self.meandisferr)
+        print("Std  distance to railroad (m):           %f" % self.stddisferr)
+        print("Mean distance to hospital (m):           %f" % self.disthospit)
+        print("Mean distance to pharmacy (m):           %f" % self.distfarma)
+        print("Mean distance to education centre (m):   %f" % self.distceduc)
+        print("Mean distance to emergency centre (m):   %f" % self.distcurgh)
+        print("Mean distance to healthcare centre (m):  %f" % self.distatprim)
         print("\n")
-        
         
     def Print_families(self):
         

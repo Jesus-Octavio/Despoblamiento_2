@@ -24,15 +24,15 @@ class Agents():
         self.age = age
         self.population_centre = population_centre
         # Features about the place each person is living in
-        self.features = population_centre.features
+        self.features =1
         # Happiness coefficient (I know this coefficient has no much sense
         # but I was trying to create a criterion to decide is s person wants to 
         # migrate or not)
-        if self.features: # non-empty dict
-            self.happiness = float(np.inner(np.random.dirichlet(np.ones(len(self.features)), size = 1),
-                             list(self.features.values())) / np.sum(list(self.features.values())))
-        else: # empty dict -> default = 1
-            self.happiness = 1
+        #if self.features: # non-empty dict
+        #    self.happiness = float(np.inner(np.random.dirichlet(np.ones(len(self.features)), size = 1),
+        #                     list(self.features.values())) / np.sum(list(self.features.values())))
+        #else: # empty dict -> default = 1
+        self.happiness = 1
         
         # Dont knowhow to use this yet...
         self.migration = 0
