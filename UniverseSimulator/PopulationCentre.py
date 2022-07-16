@@ -129,8 +129,9 @@ class PopulationCentre():
         
     ####################### TRYING TO BUILD UP FAMILES ########################
     def update_families_hist(self):
-        self.families_hist[self.year] = {"num_fam_one_person" : len(self.families["fam_one_person"]),
-                                         "num_fam_kids" : len(self.families["fam_kids"])}
+        self.families_hist[self.year] = {
+                "num_fam_one_person" : len(self.families["fam_one_person"]),
+                "num_fam_kids" : len(self.families["fam_kids"])}
     ###########################################################################
             
     
@@ -154,7 +155,7 @@ class PopulationCentre():
         
     def Print(self):
         print('###################################################')
-        print('#           Population centre ' + str(self.population_id) +'               #')
+        print('#           Population centre ' + str(self.population_id) + '               #')
         print('###################################################')
         print("Population Centre  : %s." % self.population_name)
         print("Total  inhabitants : %s." % (self.num_men + self.num_women))
@@ -219,30 +220,13 @@ class PopulationCentre():
         
         for family in self.families["fam_kids"]:
             if (not family.father) and (family.kids) and (not family.mother):
-                print("FAMILY WITHOUT PARENTS")
+                raise Exception("FAMILY WITHOUT PARENTS")
             elif (not family.father) and (family.kids):
-                print("FAMILY WITHOUT FATHER")
+                raise Exception("FAMILY WITHOUT FATHER")
             elif (not family.mother) and (family.kids):
                 print("FAMILY WITHOUT MOTHER")
             elif (family.mother) and (family.father) and (not family.kids):
-                print("FAMILY WITHOUT KIDS BUT WITH PARENTS")
-
-        """
-        for family in self.families["fam_kids"]:
-            print("--- NEW FAM ---")
-            mmax = 0
-            for elem  in family.kids:
-                if elem.age > mmax:
-                    mmax = elem.age
-            for member in family.members:
-                print("AGE %s" % member.age)
-            if family.mother.age < mmax + 25 or family.father.age < mmax + 25:
-                print("\n")
-            if family.mother.age < mmax + 25:
-                print("MOMMY %s, KID %s" % (family.mother.age, mmax))
-            if family.father.age < mmax + 25:
-                print("DADDY %s, KID %s" % (family.father.age, mmax))
-        """
+                raise Exception("FAMILY WITHOUT KIDS BUT WITH PARENTS")
             
         print("\n")
     

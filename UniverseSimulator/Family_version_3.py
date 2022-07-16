@@ -107,7 +107,7 @@ class Fam_kids(Family):
         mem_kid = 0
         mem_parent = 0
         for kid in self.kids.copy():
-            if kid.age >= 25:
+            if kid.age >= 18:
                 self.kids.remove(kid)
                 kid.family = False
                 my_family = Fam_one_person(kid.population_centre)
