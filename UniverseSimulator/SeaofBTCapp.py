@@ -278,10 +278,16 @@ if __name__ == "__main__":
     df_features      = pd.read_csv(path + "df_2_infra_coords.csv")
     year             = 2012
     
+    # betas: list of 11
+    #beta_mdt, beta_pendi, beta_carretn, beta_aut,
+    #beta_ferr, beta_dis10m, beta_hospi, beta_farma,
+    #beta_ceduc, beta_curgh, beta_arptim
+                 
     my_universe = Universe(df = df_historic_ages,
                            df_families = df_families, 
                            df_features = df_features,
-                           year = year)
+                           year = year,
+                           betas = list(np.random.uniform(0, 1, 11)))
     my_universe.Print()
 
     

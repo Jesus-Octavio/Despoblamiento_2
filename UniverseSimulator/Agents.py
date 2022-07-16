@@ -19,7 +19,8 @@ class Agents():
     
     def __init__(self, identifier, sex, age, population_centre,
                  mdt, pendi, carretn, aut, ferr, dis10m,
-                 hospi, farma, ceduc, curgh, atprim):
+                 hospi, farma, ceduc, curgh, atprim,
+                 betas):
         # AGENTS/PEOPLE CONSTRUCTOR
         
         self.person_id         = identifier
@@ -50,13 +51,42 @@ class Agents():
         # Distance to emergency centre
         self.curgh    = curgh
         # Distance to primary healthcare centre
-        self.atptim   = atprim
+        self.atprim   = atprim
         
         
         ##################### THEORY OF PLANNED BEHAVIOUR #####################
         # BEHAVIOURAL ATTITUDE
-        # Followint Vietnam PAPER, not Vietnam THESIS......
-        ba = np.random.uniform(0,1,11)
+        # Following Vietnam PAPER
+        #ba = np.random.uniform(0,1,11)
+        #ba = [(x - min(ba)) / (max(ba) - min(ba)) for x in ba]
+        #ba = [x / sum(ba) for x in ba]
+        
+        # Height abput the sea level
+        #self.beta_mdt      = ba[0]
+        # Slope
+        #self.beta_pendi    = ba[1]
+        # Distance to road
+        #self.beta_carretn  = ba[2]
+        # Distance to highway
+        #self.beta_aut      = ba[3]
+        # Distance to railroads
+        #self.beta_ferr     = ba[4]
+        # Distamce to 10k population centre
+        #self.beta_dis10m   = ba[5]
+        # Distance to hospital
+        #self.beta_hospi    = ba[6]
+        # Distamce to pharmacy
+        #self.beta_farma    = ba[7]
+        # Distance to education centre
+        #self.beta_ceduc    = ba[8]
+        # Distance to emergency centre
+        #self.beta_curgh    = ba[9]
+        # Distance to primary healthcare centre
+        #self.beta_atprim   = ba[10]
+        
+        # Following Vietnam THESIS
+        self.betas = betas
+        ba = [np.random.uniform(1, x) for x in self.betas]
         ba = [(x - min(ba)) / (max(ba) - min(ba)) for x in ba]
         ba = [x / sum(ba) for x in ba]
         
@@ -81,7 +111,8 @@ class Agents():
         # Distance to emergency centre
         self.beta_curgh    = ba[9]
         # Distance to primary healthcare centre
-        self.beta_atptim   = ba[10]
+        self.beta_atprim   = ba[10]
+        
         
         
         

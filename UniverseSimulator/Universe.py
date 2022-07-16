@@ -73,7 +73,12 @@ def myround(x, base=5):
 class Universe():
     # MAIN CLASS
     
-    def __init__(self, df, df_families, df_features, year):
+    def __init__(self, df, df_families, df_features, year,
+                 
+                 betas #list of 11
+                 
+                 ):
+        
         # CONSTRUCTOR
         global agent_idx
         agent_idx = 0
@@ -82,6 +87,9 @@ class Universe():
         # Read data from dataframe (population,......)
         self.main_dataframe = df
         
+        # Theory of planned behaviour
+        # Behavioural attitue
+        self.betas = betas
         
         ##################### TRYING TO BUILD UP FAMILES #####################
         # Read data from dataframe (FAMILIES)
@@ -105,15 +113,11 @@ class Universe():
         ######################################################################
         
         
-        
-        
-        
         # (Out-of-the (?)) universe city. Trying to model a large city.
         # E.g. Madrid or Barcelona. These cities are out of the universe
         # as they are part of other CCAA. But this large city does not need
         # to be out of our Universe
         self.large_cities = self.LargeCityBuilder()
-        
         
         
         
@@ -292,7 +296,8 @@ class Universe():
                             farma = population.distfarma,
                             ceduc = population.distceduc,
                             curgh = population.distcurgh,
-                            atprim = population.distatprim
+                            atprim = population.distatprim,
+                            betas = self.betas
                             )
                     
                     ############### TRYING TO BUILD UP FAMILES ###############
@@ -714,7 +719,8 @@ class Universe():
                             farma = population.distfarma,
                             ceduc = population.distceduc,
                             curgh = population.distcurgh,
-                            atprim = population.distatprim
+                            atprim = population.distatprim,
+                            betas = self.betas
                             )
                 
                 # Update family role
