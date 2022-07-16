@@ -706,7 +706,7 @@ class Universe():
             #print("MUJERES")
             #print(population.ages_hist[self.year + "F"])
             #print("\n")
-            
+            """
             ## SALDO MIGRATORIO (?):
             ## THOSE WHO ARE UNHAPPY ARE GOING TO LEAVE
             #### ¿Y si no hay tantan gente infeliz como gente que se tiene que ir?
@@ -785,7 +785,7 @@ class Universe():
                     population.ages_hist[self.year + the_agent.sex][interval] += 1
             
             
-            
+            """
             
             ### UPDATE AGES ###
             for person in population.inhabitants:
@@ -844,10 +844,24 @@ class Universe():
                 agent_idx = agent_idx + 1
                 
                 # Create agent
-                the_agent = Agents(identifier = agent_idx,
-                                    sex = random.choice(["M", "F"]),
-                                    age = 0,
-                                    population_centre = population)
+                the_agent = Agents(
+                            identifier = agent_idx,
+                            sex = random.choice(["M", "F"]),
+                            age = 0,
+                            population_centre = population,
+                            mdt = np.random.triangular(population.minmdt, population.meanmdt, population.maxmdt),
+                            pendi = np.random.triangular(population.minpendi, population.meanpendi, population.maxpendi),
+                            carretn = np.random.triangular(population.mincarretn, population.meancarretn, population.maxcarretn),
+                            aut = np.random.triangular(population.mindisaut, population.meandisaut, population.maxdisaut),
+                            ferr = np.random.triangular(population.mindisferr, population.meandisferr, population.maxdisferr),
+                            dis10m = np.random.triangular(population.mindisn10m, population.meandisn10m, population.maxdisn10m),
+                            hospi = population.disthospit,
+                            farma = population.distfarma,
+                            ceduc = population.distceduc,
+                            curgh = population.distcurgh,
+                            atprim = population.distatprim
+                            )
+                
                 # Update family role
                 the_agent.family_role()
                     
@@ -1379,18 +1393,11 @@ class Universe():
         print("\n")
         for population in self.population_centres:
             population.Print()
-            population.Print_features()
+            #population.Print_features()
             ################### TRYING TO BUILD UP FAMILIES ###################
+            print("\n")
             #population.Print_families()
             ###################################################################
         #for city in self.large_cities:
         #    city.Print()
-            
-    """
-    # Not useful anymore
-    # But leave it here just in case
-    def Plot(self):
-        for population in self.population_centres:
-            population.plot_hist().show()
-    """    
-
+   
