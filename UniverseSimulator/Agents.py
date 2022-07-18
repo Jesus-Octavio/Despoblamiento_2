@@ -141,6 +141,19 @@ class Agents():
         Theory of planned behaviour: behavioural attitude
         """
         return None
+    
+    def perceived_beahavioural_control(self):
+        """
+        Theory of planned behaviour. perceived behavioural control
+        """
+        return None
+    
+    def subjective_norm(self):
+        """
+        Theory of planned behaviour: subjective norm
+        
+        """
+        return None
 
     def migrate(self):
         # If a person want to migrate

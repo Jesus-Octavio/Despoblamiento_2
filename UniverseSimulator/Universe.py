@@ -39,6 +39,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.offline as py
 
+# Libraries for distances
+import geopy.distance
+
 # Load libraries for warnings
 import warnings
 warnings.simplefilter("always")
@@ -67,14 +70,21 @@ def myround(x, base=5):
         end = end + 5
     return str(init) + '-' + str(end - 1)
 
-
         
 
 class Universe():
     # MAIN CLASS
     
-    def __init__(self, df, df_families, df_features, year,
+    def __init__(self,
+                 year,
+                 df_historic_ages,
+                 df_families,
+                 df_features,
+                 df_income_spend,
+                 df_features_large_cities,
+                 df_income_spend_large_cities,
                  
+                 # TPB: Behavioural attitude
                  betas #list of 11
                  
                  ):
@@ -85,7 +95,7 @@ class Universe():
         # Year
         self.year = str(year)
         # Read data from dataframe (population,......)
-        self.main_dataframe = df
+        self.df_historic_ages = df_historic_ages
         
         # Theory of planned behaviour
         # Behavioural attitue
@@ -93,9 +103,9 @@ class Universe():
         
         ##################### TRYING TO BUILD UP FAMILES #####################
         # Read data from dataframe (FAMILIES)
-        self.families_dataframe = df_families
-        self.features_dataframe = df_features
-        # Do we need a list of families in the complete universe????
+        self.df_families     = df_families
+        self.df_features     = df_features
+        self.df_income_spend = df_income_spend 
         ######################################################################
         
 
@@ -113,10 +123,9 @@ class Universe():
         ######################################################################
         
         
-        # (Out-of-the (?)) universe city. Trying to model a large city.
-        # E.g. Madrid or Barcelona. These cities are out of the universe
-        # as they are part of other CCAA. But this large city does not need
-        # to be out of our Universe
+        # LARGE CITIES
+        self.df_features_large_cities = df_features_large_cities
+        self.df_income_spend_large_cities = df_income_spend_large_cities
         self.large_cities = self.LargeCityBuilder()
         
         
@@ -128,108 +137,82 @@ class Universe():
         population_centres = [] 
         # As we are reading from a datafrase (assume each population centre 
         # appears just once in the dataframe), consider each row:
-        for population in range(self.main_dataframe.shape[0]):
+        for population in range(self.df_historic_ages.shape[0]):
+            
             
             # Select specific row, i..e. specific population centre
-            columns_list = self.main_dataframe.columns
-            df_temp      = self.main_dataframe.iloc[population]
-            df_temp_2    = self.features_dataframe.iloc[population]
+            df_temp      = self.df_historic_ages.iloc[population]
+            identifier   = df_temp["CODMUN"]
+            df_temp_2    = self.df_features.\
+                                query('CODMUN == ' + str(identifier))
+            df_temp_3    = self.df_income_spend.\
+                                query('CODMUN == ' + str(identifier))
             
-            # Select features for the population centre
-            # To compute geodesic distance ...
-            longitud    = df_temp_2["LONGITUD_E"]
-            latitud     = df_temp_2["LATITUD_ET"]
-            # Height about the sea level
-            minmdt      = df_temp_2["MINMDT"]
-            maxmdt      = df_temp_2["MAXMDT"] 
-            meanmdt     = df_temp_2["MEANMDT"]
-            stdmdt      = df_temp_2["STDMDT"]
-            # Slope
-            minpendi    = df_temp_2["MINPENDI"]
-            maxpendi    = df_temp_2["MAXPENDI"]
-            meanpendi   = df_temp_2["MEANPENDI"]
-            stdpendi    = df_temp_2["STDPENDI"]
-            # Distance to 10k population centre
-            mindisn10m  = df_temp_2["MINDISN10M"]
-            maxdisn10m  = df_temp_2["MAXDISN10M"]
-            meandisn10m = df_temp_2["MEANDISN10M"]
-            stddisn10m  = df_temp_2["STDDISN10M"]
-            # Distance to road
-            mincarretn  = df_temp_2["MINCARRETN"]
-            maxcarretn  = df_temp_2["MAXCARRETN"]
-            meancarretn = df_temp_2["MEANCARRETN"]
-            stdcarretn  = df_temp_2["STDCARRETN"]
-            # Distance to highway
-            mindisaut   = df_temp_2["MINDISAUT"]
-            maxdisaut   = df_temp_2["MAXDISAUT"]
-            meandisaut  = df_temp_2["MEANDISAUT"]
-            stddisaut   = df_temp_2["STDDISAUT"] 
-            # Distance to railroad
-            mindisferr  = df_temp_2["MINDISFERR"] 
-            maxdisferr  = df_temp_2["MAXDISFERR"] 
-            meandisferr = df_temp_2["MEANDISFERR"]
-            stddisferr  = df_temp_2["STDDISFERR"]
-            # Distance to hospitals
-            disthospit  = df_temp_2["DISTHOSPIT"]
-            # Distance to pharmacies
-            distfarma   = df_temp_2["DISTFARMA"]
-            # Distance to education centres
-            distceduc   = df_temp_2["DISTCEDUC"]
-            # Distance to emercengy centres
-            distcurgh   = df_temp_2["DISTCURGH"]
-            # Distance to primary healthcare centres
-            distatprim  = df_temp_2["DISTATPRIM"]
-            
-            
-            my_cols = ["HOM" + self.year, "MUJ" + self.year,
+                    
+            my_cols   = ["HOM" + self.year, "MUJ" + self.year,
                        "NAT" + self.year, "MOR" + self.year, 
                        "SALDOTT" + self.year]
             
             my_cols_update = ["NAT", "MOR", "SALDOTT"]
             
             d_args = {}
-            for column in columns_list:
-                if column in my_cols:
-                    d_args[column[:len(column)-4].lower()] = df_temp[column]
+            for column in my_cols:
+                d_args[column[:len(column)-4].lower()] = df_temp[column]
             
             # Invoke Population Center constructor
             the_population = PopulationCentre(
                     year        = self.year,
-                    identifier  = df_temp["CODMUN"],
+                    identifier  = identifier,
                     name        = df_temp["Nombre"],
                     num_men     = 0,
                     num_women   = 0,
-                    longitud    = longitud,
-                    latitud     = latitud,
-                    minmdt      = minmdt,
-                    maxmdt      = maxmdt,
-                    meanmdt     = meanmdt,
-                    stdmdt      = stdmdt,
-                    minpendi    = minpendi,
-                    maxpendi    = maxpendi,
-                    meanpendi   = meanpendi,
-                    stdpendi    = stdpendi,
-                    mindisn10m  = mindisn10m,
-                    maxdisn10m  = maxdisn10m,
-                    meandisn10m = meandisn10m,
-                    stddisn10m  = stddisn10m,
-                    mincarretn  = mincarretn,
-                    maxcarretn  = maxcarretn,
-                    meancarretn = meancarretn,
-                    stdcarretn  = stdcarretn,
-                    mindisaut   = mindisaut,
-                    maxdisaut   = maxdisaut,
-                    meandisaut  = meandisaut,
-                    stddisaut   = stddisaut,
-                    mindisferr  = mindisferr,
-                    maxdisferr  = maxdisferr,
-                    meandisferr = meandisferr,
-                    stddisferr  = stddisferr,
-                    disthospit  = disthospit, 
-                    distfarma   = distfarma,
-                    distceduc   = distceduc,
-                    distcurgh   = distcurgh,
-                    distatprim  = distatprim,
+                    # Select features for the population centre
+                    # To compute geodesic distance ...
+                    longitud    = df_temp_2["LONGITUD_E"],
+                    latitud     = df_temp_2["LATITUD_ET"],
+                    # Height about the sea level
+                    minmdt      = df_temp_2["MINMDT"],
+                    maxmdt      = df_temp_2["MAXMDT"] ,
+                    meanmdt     = df_temp_2["MEANMDT"],
+                    stdmdt      = df_temp_2["STDMDT"],
+                    # Slope
+                    minpendi    = df_temp_2["MINPENDI"],
+                    maxpendi    = df_temp_2["MAXPENDI"],
+                    meanpendi   = df_temp_2["MEANPENDI"],
+                    stdpendi    = df_temp_2["STDPENDI"],
+                    # Distance to 10k population centre
+                    mindisn10m  = df_temp_2["MINDISN10M"],
+                    maxdisn10m  = df_temp_2["MAXDISN10M"],
+                    meandisn10m = df_temp_2["MEANDISN10M"],
+                    stddisn10m  = df_temp_2["STDDISN10M"],
+                    # Distance to road
+                    mincarretn  = df_temp_2["MINCARRETN"],
+                    maxcarretn  = df_temp_2["MAXCARRETN"],
+                    meancarretn = df_temp_2["MEANCARRETN"],
+                    stdcarretn  = df_temp_2["STDCARRETN"],
+                    # Distance to highway
+                    mindisaut   = df_temp_2["MINDISAUT"],
+                    maxdisaut   = df_temp_2["MAXDISAUT"],
+                    meandisaut  = df_temp_2["MEANDISAUT"],
+                    stddisaut   = df_temp_2["STDDISAUT"],
+                    # Distance to railroad
+                    mindisferr  = df_temp_2["MINDISFERR"],
+                    maxdisferr  = df_temp_2["MAXDISFERR"],
+                    meandisferr = df_temp_2["MEANDISFERR"],
+                    stddisferr  = df_temp_2["STDDISFERR"],
+                    # Distance to hospitals
+                    disthospit  = df_temp_2["DISTHOSPIT"],
+                    # Distance to pharmacies
+                    distfarma   = df_temp_2["DISTFARMA"],
+                    # Distance to education centres
+                    distceduc   = df_temp_2["DISTCEDUC"],
+                    # Distance to emercengy centres
+                    distcurgh   = df_temp_2["DISTCURGH"],
+                    # Distance to primary healthcare centres
+                    distatprim  = df_temp_2["DISTATPRIM"],
+                    # Data about income and spenditures
+                    salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)], 
+                    gasto       = df_temp_3["GASTO_MEAN_"   + str(self.year)],
                     **d_args)
 
             # Add specific population to the universe
@@ -238,10 +221,80 @@ class Universe():
         return  [population_centres, my_cols_update]
     
     
-    def LargeCityBuilder(self):
-        city_1 = LargeCity("CITY1", "Madrid",     0, 0, {})
-        city_2 = LargeCity("CITY2", "Barcelona",  0, 0, {})
-        return [city_1, city_2]
+    def LargeCityBuilder(self): 
+        # METHOD TO BUILD UP LARGE CITIES
+        # List to store population centres
+        large_cities = [] 
+        # As we are reading from a datafrase (assume each population centre 
+        # appears just once in the dataframe), consider each row:
+        for city in range(self.df_features_large_cities.shape[0]):
+            
+            # Select specific row, i..e. specific population centre
+            df_temp_2  = self.df_features_large_cities.iloc[city]
+            identifier = df_temp_2["CODMUN"]
+            df_temp_3  = self.df_income_spend_large_cities.\
+                                query('CODMUN == ' + str(identifier))
+            
+
+            
+        
+            # Invoke Population Center constructor
+            the_population = LargeCity(
+                    identifier  = df_temp_2["CODMUN"],
+                    name        = df_temp_2["NOMBRE"],
+                    # Select features for the population centre
+                    # To compute geodesic distance ...
+                    longitud    = df_temp_2["LONGITUD_E"],
+                    latitud     = df_temp_2["LATITUD_ET"],
+                    # Height about the sea level
+                    minmdt      = df_temp_2["MINMDT"],
+                    maxmdt      = df_temp_2["MAXMDT"] ,
+                    meanmdt     = df_temp_2["MEANMDT"],
+                    stdmdt      = df_temp_2["STDMDT"],
+                    # Slope,
+                    minpendi    = df_temp_2["MINPENDI"],
+                    maxpendi    = df_temp_2["MAXPENDI"],
+                    meanpendi   = df_temp_2["MEANPENDI"],
+                    stdpendi    = df_temp_2["STDPENDI"],
+                    # Distance to 10k population centre
+                    mindisn10m  = df_temp_2["MINDISN10M"],
+                    maxdisn10m  = df_temp_2["MAXDISN10M"],
+                    meandisn10m = df_temp_2["MEANDISN10M"],
+                    stddisn10m  = df_temp_2["STDDISN10M"],
+                    # Distance to road
+                    mincarretn  = df_temp_2["MINCARRETN"],
+                    maxcarretn  = df_temp_2["MAXCARRETN"],
+                    meancarretn = df_temp_2["MEANCARRETN"],
+                    stdcarretn  = df_temp_2["STDCARRETN"],
+                    # Distance to highway,
+                    mindisaut   = df_temp_2["MINDISAUT"],
+                    maxdisaut   = df_temp_2["MAXDISAUT"],
+                    meandisaut  = df_temp_2["MEANDISAUT"],
+                    stddisaut   = df_temp_2["STDDISAUT"] ,
+                    # Distance to railroad
+                    mindisferr  = df_temp_2["MINDISFERR"] ,
+                    maxdisferr  = df_temp_2["MAXDISFERR"] ,
+                    meandisferr = df_temp_2["MEANDISFERR"],
+                    stddisferr  = df_temp_2["STDDISFERR"],
+                    # Distance to hospitals
+                    disthospit  = df_temp_2["DISTHOSPIT"],
+                    # Distance to pharmacies
+                    distfarma   = df_temp_2["DISTFARMA"],
+                    # Distance to education centres
+                    distceduc   = df_temp_2["DISTCEDUC"],
+                    # Distance to emercengy centres
+                    distcurgh   = df_temp_2["DISTCURGH"],
+                    # Distance to primary healthcare centres
+                    distatprim  = df_temp_2["DISTATPRIM"],
+                    salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)],
+                    gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)])
+
+            # Add specific population to the universe
+            large_cities.append(the_population)
+        
+        return large_cities
+        
+        
 
     
     
@@ -249,15 +302,15 @@ class Universe():
         # Method to build up agents
         global agent_idx
         agents = []
-        age_cols = [col for col in self.main_dataframe.columns if col.startswith('Edad_')]
-        #age_cols = self.main_dataframe.filter(regex = r'^Edad_.*?$', axis = 1)
-        #male_cols =  self.main_dataframe.filter(regex = r'^Edad_M.*?$', axis = 1)
-        #female_ cols = self.main_dataframe.filter(regex = r'^Edad_F.*?$', axis = 1)
+        age_cols = [col for col in self.df_historic_ages.columns if col.startswith('Edad_')]
+        #age_cols =self.df_historic_ages.filter(regex = r'^Edad_.*?$', axis = 1)
+        #male_cols =  self.df_historic_ages.filter(regex = r'^Edad_M.*?$', axis = 1)
+        #female_ cols = self.df_historic_ages.filter(regex = r'^Edad_F.*?$', axis = 1)
         for population in self.population_centres:
             # Dictionary for age ranges
             age_range = {self.year + "M" : {}, self.year + "F" : {}}
             # Select subdataframe
-            df_temp = self.main_dataframe.\
+            df_temp = self.df_historic_ages.\
                 query('CODMUN == ' + str(population.population_id))[age_cols]
                 
             for col in df_temp.columns:
@@ -282,21 +335,21 @@ class Universe():
                     # Crate agent
                     # Other values? distributions?
                     the_agent = Agents(
-                            identifier = agent_idx,
-                            sex = sex,
-                            age = random.randint(init, end),
+                            identifier        = agent_idx,
+                            sex               = sex,
+                            age               = random.randint(init, end),
                             population_centre = population,
-                            mdt = np.random.triangular(population.minmdt, population.meanmdt, population.maxmdt),
-                            pendi = np.random.triangular(population.minpendi, population.meanpendi, population.maxpendi),
-                            carretn = np.random.triangular(population.mincarretn, population.meancarretn, population.maxcarretn),
-                            aut = np.random.triangular(population.mindisaut, population.meandisaut, population.maxdisaut),
-                            ferr = np.random.triangular(population.mindisferr, population.meandisferr, population.maxdisferr),
-                            dis10m = np.random.triangular(population.mindisn10m, population.meandisn10m, population.maxdisn10m),
-                            hospi = population.disthospit,
-                            farma = population.distfarma,
-                            ceduc = population.distceduc,
-                            curgh = population.distcurgh,
-                            atprim = population.distatprim,
+                            mdt               = population.meanmdt,
+                            pendi             = population.meanpendi,
+                            carretn           = population.meancarretn,
+                            aut               = population.meandisaut,
+                            ferr              = population.meandisferr,
+                            dis10m            = population.meandisn10m,
+                            hospi             = population.disthospit,
+                            farma             = population.distfarma,
+                            ceduc             = population.distceduc,
+                            curgh             = population.distcurgh,
+                            atprim            = population.distatprim,
                             betas = self.betas
                             )
                     
@@ -329,7 +382,7 @@ class Universe():
         for population in self.population_centres:
             
             # Given a population centre, select specific row in df
-            df_temp = self.families_dataframe.\
+            df_temp = self.df_families.\
                 query('CODMUN == ' + str(population.population_id))
                 
             # Number of kids for each population centre:
@@ -839,7 +892,7 @@ class Universe():
             ### UPDATE MORTALITY, NATALITY, .... ###
             d_args_update = {}
             for column in self.cols_update:
-                d_args_update[column.lower()] = self.main_dataframe.\
+                d_args_update[column.lower()] = self.df_historic_ages.\
                     query('CODMUN == ' + str(population.population_id))[column+self.year]
             
             population.update_population(**d_args_update)            
@@ -1073,7 +1126,7 @@ class Universe():
         if my_population == False:
             raise Exception("Population centre not found")
         
-        df_temp = self.main_dataframe.\
+        df_temp = self.df_historic_ages.\
                 query('CODMUN == ' + str(population.population_id))
                 
         years = population.year_hist
@@ -1228,7 +1281,7 @@ class Universe():
             total_pred = [sum(x) for x in zip(population.men_hist, population.women_hist)]
             total_obs = []
             for year in years:
-                temp = self.main_dataframe.\
+                temp = self.df_historic_ages.\
                     query('CODMUN == ' + str(population.population_id))["POB"+ str(year)].\
                     values
                 temp = int(temp)
@@ -1259,6 +1312,5 @@ class Universe():
             print("\n")
             #population.Print_families()
             ###################################################################
-        #for city in self.large_cities:
-        #    city.Print()
-   
+        for city in self.large_cities:
+            city.Print_features()   

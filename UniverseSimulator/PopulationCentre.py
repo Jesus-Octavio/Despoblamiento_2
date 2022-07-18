@@ -34,6 +34,8 @@ class PopulationCentre():
                  distceduc,
                  distcurgh,
                  distatprim,
+                 salario,
+                 gasto,
                  hom, muj, nat, mor, saldott):
         
         self.year = year
@@ -81,6 +83,9 @@ class PopulationCentre():
         self.distceduc   = distceduc
         self.distcurgh   = distcurgh
         self.distatprim  = distatprim
+        
+        self.salario     = salario
+        self.gasto       = gasto
                     
         # Mean happiness for inhabitants
         self.mean_happiness = self.update_mean_happiness()
@@ -199,6 +204,8 @@ class PopulationCentre():
         print("Mean distance to education centre (m):   %f" % self.distceduc)
         print("Mean distance to emergency centre (m):   %f" % self.distcurgh)
         print("Mean distance to healthcare centre (m):  %f" % self.distatprim)
+        print("Mean annual income:                      %f" % self.salario)
+        print("Mean annaual spenditure:                 %f" % self.gasto)
         print("\n")
         
     def Print_families(self):

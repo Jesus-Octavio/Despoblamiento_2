@@ -35,7 +35,7 @@ import plotly.offline as py
 import sys
 
 
-LARGE_FONT= ("Verdana", 12)
+LARGE_FONT = ("Verdana", 12)
 
 
 class Pages:
@@ -269,24 +269,42 @@ class PlotPage(tk.Frame, Pages):
         self.label = tk.Label(self, text = text).pack()
 
         
+        
+        
+        
+        
+
+
+
      
 if __name__ == "__main__":
+    
+    year             = 2012
+    
     # COMARCA 2
     path             = "Dominio/Comarca_2/"
     df_historic_ages = pd.read_csv(path + "df_2_historic_ages.csv")
     df_families      = pd.read_csv(path + "df_2_families.csv")
-    df_features      = pd.read_csv(path + "df_2_infra_coords.csv")
-    year             = 2012
+    df_features      = pd.read_csv(path + "df_2_infra_coords_normal.csv")
+    df_income_spend  = pd.read_csv(path + "df_2_income_spend_normal.csv") 
+    
+    
+    df_features_large_cities     = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
+    df_income_spend_large_cities = pd.read_csv(path + "df_large_cities_income_spend_normal.csv")
+    
     
     # betas: list of 11
     #beta_mdt, beta_pendi, beta_carretn, beta_aut,
     #beta_ferr, beta_dis10m, beta_hospi, beta_farma,
     #beta_ceduc, beta_curgh, beta_arptim
                  
-    my_universe = Universe(df = df_historic_ages,
-                           df_families = df_families, 
-                           df_features = df_features,
-                           year = year,
+    my_universe = Universe(year                         = year,
+                           df_historic_ages             = df_historic_ages,
+                           df_families                  = df_families,
+                           df_features                  = df_features,
+                           df_income_spend              = df_income_spend,
+                           df_features_large_cities     = df_features_large_cities,
+                           df_income_spend_large_cities = df_income_spend_large_cities,
                            betas = list(np.random.uniform(0, 1, 11)))
     my_universe.Print()
 
