@@ -279,7 +279,7 @@ class PlotPage(tk.Frame, Pages):
      
 if __name__ == "__main__":
     
-    year             = 2011
+    year             = 2010
     
     # COMARCA 2
     path             = "Dominio/Comarca_2/"

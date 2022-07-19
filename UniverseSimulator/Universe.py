@@ -223,8 +223,8 @@ class Universe():
                     # Distance to primary healthcare centres
                     distatprim  = df_temp_2["DISTATPRIM"],
                     # Data about income and spenditures
-                    salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)], 
-                    gasto       = df_temp_3["GASTO_MEAN_"   + str(self.year)],
+                    #salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)], 
+                    #gasto       = df_temp_3["GASTO_MEAN_"   + str(self.year)],
                     **d_args)
 
             # Add specific population to the universe
@@ -297,9 +297,9 @@ class Universe():
                     # Distance to emercengy centres
                     distcurgh   = df_temp_2["DISTCURGH"],
                     # Distance to primary healthcare centres
-                    distatprim  = df_temp_2["DISTATPRIM"],
-                    salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)],
-                    gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)])
+                    distatprim  = df_temp_2["DISTATPRIM"])
+                    #salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)],
+                    #gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)])
 
             # Add specific population to the universe
             large_cities.append(the_population)
@@ -1313,7 +1313,9 @@ class Universe():
         
     def Print(self):
         print('###################################################')
+        print('###################################################')
         print('#    POPULATION CENTRES IN THE UNIVERSE. ' + self.year +'     #')
+        print('###################################################')
         print('###################################################')
         print("Universe population: %s persons" % len(self.universe_persons))
         print("\n")

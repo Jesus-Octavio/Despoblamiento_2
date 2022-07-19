@@ -22,9 +22,9 @@ class LargeCity():
                  distfarma,
                  distceduc,
                  distcurgh,
-                 distatprim,
-                 salario,
-                 gasto,):
+                 distatprim,):
+                 #salario,
+                 #gasto,):
         
         self.population_id = identifier
         self.population_name = name
@@ -62,8 +62,8 @@ class LargeCity():
         self.distcurgh   = distcurgh
         self.distatprim  = distatprim
         
-        self.salario     = salario
-        self.gasto       = gasto
+        #self.salario     = salario
+        #self.gasto       = gasto
         
     """
     def Print(self):

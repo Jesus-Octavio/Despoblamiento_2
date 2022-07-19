@@ -34,8 +34,8 @@ class PopulationCentre():
                  distceduc,
                  distcurgh,
                  distatprim,
-                 salario,
-                 gasto,
+                 #salario,
+                 #gasto,
                  hom, muj, nat, mor):
                  #saldott):
         
@@ -48,7 +48,7 @@ class PopulationCentre():
         self.num_women = num_women
         self.natality = nat
         self.mortality = mor
-        self.saldo_migratorio_total = saldott
+        #self.saldo_migratorio_total = saldott
         self.inhabitants = []
         #self.inhabitant = inhabitants
         
@@ -85,8 +85,8 @@ class PopulationCentre():
         self.distcurgh   = distcurgh
         self.distatprim  = distatprim
         
-        self.salario     = salario
-        self.gasto       = gasto
+        #self.salario     = salario
+        #self.gasto       = gasto
                     
         # Mean happiness for inhabitants
         self.mean_happiness = self.update_mean_happiness()
@@ -119,10 +119,10 @@ class PopulationCentre():
         
     
         
-    def update_population(self, nat, mor, saldott):
+    def update_population(self, nat, mor): #saldott):
         self.natality = int(nat)
         self.mortality = int(mor)
-        self.saldo_migratorio_total = int(saldott)
+        #self.saldo_migratorio_total = int(saldott)
         
         
     def update_population_hist(self):
@@ -130,7 +130,7 @@ class PopulationCentre():
         self.mortality_hist.append(int(self.mortality))
         self.men_hist.append(int(self.num_men))
         self.women_hist.append(int(self.num_women))
-        self.saldo_hist.append(int(self.saldo_migratorio_total))
+        #self.saldo_hist.append(int(self.saldo_migratorio_total))
         self.year_hist.append(int(self.year))
         
     ####################### TRYING TO BUILD UP FAMILES ########################
