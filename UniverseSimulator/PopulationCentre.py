@@ -36,7 +36,8 @@ class PopulationCentre():
                  distatprim,
                  salario,
                  gasto,
-                 hom, muj, nat, mor, saldott):
+                 hom, muj, nat, mor):
+                 #saldott):
         
         self.year = year
         self.population_id = identifier

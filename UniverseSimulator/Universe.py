@@ -85,7 +85,13 @@ class Universe():
                  df_income_spend_large_cities,
                  
                  # TPB: Behavioural attitude
-                 betas #list of 11
+                 betas, #list/array of 11
+                 # TPB: Subjective norm
+                 gamma, #float
+                 # TPB: Perceived behavioural control
+                 theta, #float
+                 # TPB: Intention
+                 alphas #list/array of 3
                  
                  ):
         
@@ -100,6 +106,9 @@ class Universe():
         # Theory of planned behaviour
         # Behavioural attitue
         self.betas = betas
+        self.gamma = gamma
+        self.theta = theta
+        self.alphas = alphas
         
         ##################### TRYING TO BUILD UP FAMILES #####################
         # Read data from dataframe (FAMILIES)
@@ -149,11 +158,14 @@ class Universe():
                                 query('CODMUN == ' + str(identifier))
             
                     
+            #my_cols   = ["HOM" + self.year, "MUJ" + self.year,
+            #             "NAT" + self.year, "MOR" + self.year, 
+            #            "SALDOTT" + self.year]
             my_cols   = ["HOM" + self.year, "MUJ" + self.year,
-                       "NAT" + self.year, "MOR" + self.year, 
-                       "SALDOTT" + self.year]
+                         "NAT" + self.year, "MOR" + self.year]
             
-            my_cols_update = ["NAT", "MOR", "SALDOTT"]
+            #my_cols_update = ["NAT", "MOR", "SALDOTT"]
+            my_cols_update = ["NAT", "MOR"]
             
             d_args = {}
             for column in my_cols:
@@ -731,10 +743,10 @@ class Universe():
                     kids_to_adult += b[1]
                     adults_no_kids += b[2]
                     disbanded_fams += 1
-            print("UPDATE -> DISBANDED FAMILIES with kids: %s" % disbanded_fams)
-            print("UPDATE -> KIDS TO ADULTS              : %s" % kids_to_adult)
-            print("UPDATE -> FREE ADULTS                 : %s" % adults_no_kids)
-            print("\n")
+            #print("UPDATE -> DISBANDED FAMILIES with kids: %s" % disbanded_fams)
+            #print("UPDATE -> KIDS TO ADULTS              : %s" % kids_to_adult)
+            #print("UPDATE -> FREE ADULTS                 : %s" % adults_no_kids)
+            #print("\n")
             ###################################################################
             
             
@@ -762,17 +774,17 @@ class Universe():
                             sex = random.choice(["M", "F"]),
                             age = 0,
                             population_centre = population,
-                            mdt = np.random.triangular(population.minmdt, population.meanmdt, population.maxmdt),
-                            pendi = np.random.triangular(population.minpendi, population.meanpendi, population.maxpendi),
-                            carretn = np.random.triangular(population.mincarretn, population.meancarretn, population.maxcarretn),
-                            aut = np.random.triangular(population.mindisaut, population.meandisaut, population.maxdisaut),
-                            ferr = np.random.triangular(population.mindisferr, population.meandisferr, population.maxdisferr),
-                            dis10m = np.random.triangular(population.mindisn10m, population.meandisn10m, population.maxdisn10m),
-                            hospi = population.disthospit,
-                            farma = population.distfarma,
-                            ceduc = population.distceduc,
-                            curgh = population.distcurgh,
-                            atprim = population.distatprim,
+                            mdt               = population.meanmdt,
+                            pendi             = population.meanpendi,
+                            carretn           = population.meancarretn,
+                            aut               = population.meandisaut,
+                            ferr              = population.meandisferr,
+                            dis10m            = population.meandisn10m,
+                            hospi             = population.disthospit,
+                            farma             = population.distfarma,
+                            ceduc             = population.distceduc,
+                            curgh             = population.distcurgh,
+                            atprim            = population.distatprim,
                             betas = self.betas
                             )
                 
@@ -880,9 +892,9 @@ class Universe():
                             
         
                         
-            print("BUG0 %s" % t0)
-            print("BUG1 %s" % t1)
-            print("BUG2 %s" % t2)
+            #print("BUG0 %s" % t0)
+            #print("BUG1 %s" % t1)
+            #print("BUG2 %s" % t2)
                         
                     
                 
@@ -1312,5 +1324,5 @@ class Universe():
             print("\n")
             #population.Print_families()
             ###################################################################
-        for city in self.large_cities:
-            city.Print_features()   
+        #for city in self.large_cities:
+        #    city.Print_features()   

@@ -87,7 +87,6 @@ class Agents():
         # Following Vietnam THESIS
         self.betas = betas
         ba = [np.random.uniform(1, x) for x in self.betas]
-        ba = [(x - min(ba)) / (max(ba) - min(ba)) for x in ba]
         ba = [x / sum(ba) for x in ba]
         
         # Height abput the sea level

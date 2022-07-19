@@ -279,7 +279,7 @@ class PlotPage(tk.Frame, Pages):
      
 if __name__ == "__main__":
     
-    year             = 2012
+    year             = 2011
     
     # COMARCA 2
     path             = "Dominio/Comarca_2/"
@@ -297,6 +297,8 @@ if __name__ == "__main__":
     #beta_mdt, beta_pendi, beta_carretn, beta_aut,
     #beta_ferr, beta_dis10m, beta_hospi, beta_farma,
     #beta_ceduc, beta_curgh, beta_arptim
+    
+    # gamma: parameter for subjective norm
                  
     my_universe = Universe(year                         = year,
                            df_historic_ages             = df_historic_ages,
@@ -305,19 +307,22 @@ if __name__ == "__main__":
                            df_income_spend              = df_income_spend,
                            df_features_large_cities     = df_features_large_cities,
                            df_income_spend_large_cities = df_income_spend_large_cities,
-                           betas = list(np.random.uniform(0, 1, 11)))
+                           betas  = list(np.random.uniform(0, 1, 11)),
+                           gamma  = np.random.uniform(0, 1),
+                           theta  = np.random.uniform(0, 1),
+                           alphas = list(np.random.uniform(0, 1, 3)))
     my_universe.Print()
 
     
         
-    #for i in range(1, 2):
-    #    my_universe.update()
-    #    my_universe.Print()
+    for i in range(1, 2):
+        my_universe.update()
+        my_universe.Print()
     
     
     #my_universe.regression_metrics()
-    #app = SeaofBTCapp(universe = my_universe)
-    #app.mainloop()
+    app = SeaofBTCapp(universe = my_universe)
+    app.mainloop()
        
 #app = SeaofBTCapp()
 #app.mainloop()
