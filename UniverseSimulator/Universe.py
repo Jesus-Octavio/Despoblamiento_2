@@ -91,8 +91,9 @@ class Universe():
                  # TPB: Perceived behavioural control
                  theta, #float
                  # TPB: Intention
-                 alphas #list/array of 3
-                 
+                 alphas, #list/array of 3
+                 natality_model,
+                 mortality_model
                  ):
         
         # CONSTRUCTOR
@@ -100,6 +101,11 @@ class Universe():
         agent_idx = 0
         # Year
         self.year = str(year)
+        #################### NATALITY AND MORTALITY MODELS ####################
+        self.natality_model  = natality_model
+        self.mortality_model = mortality_model
+        
+        
         # Read data from dataframe (population,......)
         self.df_historic_ages = df_historic_ages
         
@@ -138,7 +144,6 @@ class Universe():
         self.large_cities = self.LargeCityBuilder()
         
         
-        
 
     def PopulationCentreBuilder(self):
         # METHOD TO BUILD UP POPULATION CENTRES
@@ -152,8 +157,10 @@ class Universe():
             # Select specific row, i..e. specific population centre
             df_temp      = self.df_historic_ages.iloc[population]
             identifier   = df_temp["CODMUN"]
+            
             df_temp_2    = self.df_features.\
                                 query('CODMUN == ' + str(identifier))
+            
             df_temp_3    = self.df_income_spend.\
                                 query('CODMUN == ' + str(identifier))
             
@@ -161,15 +168,16 @@ class Universe():
             #my_cols   = ["HOM" + self.year, "MUJ" + self.year,
             #             "NAT" + self.year, "MOR" + self.year, 
             #            "SALDOTT" + self.year]
-            my_cols   = ["HOM" + self.year, "MUJ" + self.year,
-                         "NAT" + self.year, "MOR" + self.year]
+            my_cols   = ["NAT" + self.year, "MOR" + self.year]
             
             #my_cols_update = ["NAT", "MOR", "SALDOTT"]
-            my_cols_update = ["NAT", "MOR"]
+            #my_cols_update = ["NAT", "MOR"]
             
             d_args = {}
             for column in my_cols:
                 d_args[column[:len(column)-4].lower()] = df_temp[column]
+            
+           
             
             # Invoke Population Center constructor
             the_population = PopulationCentre(
@@ -222,15 +230,19 @@ class Universe():
                     distcurgh   = df_temp_2["DISTCURGH"],
                     # Distance to primary healthcare centres
                     distatprim  = df_temp_2["DISTATPRIM"],
+                    natality    = 0,
+                    mortality   = 0,
                     # Data about income and spenditures
                     #salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)], 
                     #gasto       = df_temp_3["GASTO_MEAN_"   + str(self.year)],
                     **d_args)
-
+            
+    
+           
             # Add specific population to the universe
             population_centres.append(the_population)
         
-        return  [population_centres, my_cols_update]
+        return  [population_centres, ["NAT", "MOR"]]
     
     
     def LargeCityBuilder(self): 
@@ -378,7 +390,31 @@ class Universe():
             
             # Update dictionary with age ranges and historial
             population.ages_hist = age_range
+            
+            df = pd.DataFrame.from_dict(population.ages_hist)        
+            my_cols = [col for col in df.columns if str(self.year) in col]
+            df = df[my_cols]
+            temp = df.transpose()
+            temp_male = pd.DataFrame(temp.iloc[0]).transpose()
+            temp_male.columns =["H" + x.replace("-", "A") if "-" in x else "H100MS" for x in temp_male.columns]
+            temp_female = pd.DataFrame(temp.iloc[1]).transpose()
+            temp_female.columns = ["M" + x.replace("-", "A") if "-" in x else "M100YMS" for x in temp_female.columns]
+            df_X = pd.concat([temp_male.reset_index(drop=True),
+                          temp_female.reset_index(drop=True)], axis=1)
+    
+            mortality = self.mortality_model.predict(df_X) 
+            natality  = self.natality_model.predict(df_X)
+           
+            
+            mortality = 0 if mortality <= 0 else np.rint(mortality)
+            natality  = 0 if natality  <= 0 else np.rint(natality)
+            
+            population.natality  = natality
+            population.mortality = mortality
+            
+            
             # Update historial for ages
+            population.update_population(iteration = 0)
             population.update_population_hist()
             # Update historial for families
             population.update_families_hist()
@@ -584,6 +620,8 @@ class Universe():
             # If I considere that, this while loop
             # can be transformed into a for loop
             
+                       
+                       
             deaths = 0
             while deaths < population.mortality:
                 max_age = 0
@@ -803,26 +841,26 @@ class Universe():
                 
                 ################## TRYING TO BUILD UP FAMILIES ################
                 # Time to assign kids to families
-                dice = random.uniform(0, 1)
                 
-                if dice < 0.75: # Assign kid to an existing family with one kind
-                    for family in population.families["fam_kids"]:
-                        # If available space for kids
-                        if len(family.kids) < family.kids_limit:
-                            t0 += 1
-                            family.update(the_agent, "kid")
-                            break
+                
+                for family in population.families["fam_kids"]:
+                    # If available space for kids
+                    if len(family.kids) < family.kids_limit:
+                        t0 += 1
+                        family.update(the_agent, "kid")
+                        break
                             
-                        elif (family.kids_limit == 1) and (len(family.kids) == 1):
-                            t1 += 1
-                            family.kids_limit += 1
-                            family.update(the_agent, "kid")
-                            break
-                    if not the_agent.family:
-                        print("FAMILY NOT FOUND FOR KID DICE < THRES")
+                    elif (family.kids_limit == 1) and (len(family.kids) == 1):
+                        t1 += 1
+                        family.kids_limit += 1
+                        family.update(the_agent, "kid")
+                        break
+                #if not the_agent.family:
+                #    print("FAMILY NOT FOUND FOR KID DICE < THRES")
                         
-                        
-                else: # Build up a new family   
+                    
+                if not the_agent.family:
+                #else: # Build up a new family   
                     
                     bool_father = False
                     bool_mother = False
@@ -902,12 +940,23 @@ class Universe():
 
             
             ### UPDATE MORTALITY, NATALITY, .... ###
-            d_args_update = {}
+            #d_args_update = {}
             for column in self.cols_update:
-                d_args_update[column.lower()] = self.df_historic_ages.\
-                    query('CODMUN == ' + str(population.population_id))[column+self.year]
+                if column + self.year in self.df_historic_ages.columns:
+                    if column == "NAT":
+                        population.natality_real =  self.df_historic_ages.\
+                            query('CODMUN == ' + str(population.population_id))[column+self.year].values
+                    else:
+                        population.mortality_real =  self.df_historic_ages.\
+                            query('CODMUN == ' + str(population.population_id))[column+self.year].values
+                else:
+                    if column == "NAT":
+                        population.natality_real  = None
+                    else:
+                        population.mortality_real = None
+                    
             
-            population.update_population(**d_args_update)            
+            population.update_population()            
                         
             #print("\n")
             #print("FINAL ACTUALIZACION")
@@ -917,6 +966,31 @@ class Universe():
             #print("MUJERES")
             #print(population.ages_hist[self.year + "F"])
             #print("\n")
+            
+            
+            
+            
+            print(population.population_name)
+            ### INVOKE NATALITY AND MORTALITY MODELS ###
+            df = pd.DataFrame.from_dict(population.ages_hist)        
+            my_cols = [col for col in df.columns if str(self.year) in col]
+            df = df[my_cols]
+            temp = df.transpose()
+            temp_male = pd.DataFrame(temp.iloc[0]).transpose()
+            temp_male.columns =["H" + x.replace("-", "A") if "-" in x else "H100MS" for x in temp_male.columns]
+            temp_female = pd.DataFrame(temp.iloc[1]).transpose()
+            temp_female.columns = ["M" + x.replace("-", "A") if "-" in x else "M100YMS" for x in temp_female.columns]
+            df_X = pd.concat([temp_male.reset_index(drop=True),
+                          temp_female.reset_index(drop=True)], axis=1)
+    
+            mortality = self.mortality_model.predict(df_X) 
+            natality  = self.natality_model.predict(df_X)
+            #print("Mortality %f" % int(mortality))
+            #print("Natality %f" % int(natality))
+            #print("\n")
+            
+            population.mortality = 0 if mortality <= 0 else int(mortality)
+            population.natality  = 0 if natality  <= 0 else int(natality)
             
             # Update year for the population centre
             population.year = int(population.year) + 1
@@ -1020,11 +1094,11 @@ class Universe():
             raise Exception("Population centre not found")
         
         
-        df = pd.DataFrame.from_dict(my_population.ages_hist)
+        
+        df = pd.DataFrame.from_dict(my_population.ages_hist)        
         my_cols = [col for col in df.columns if str(year) in col]
         df = df[my_cols]
-        
-        
+
         fig = go.Figure()
         
         fig.add_trace(go.Bar(
@@ -1283,7 +1357,92 @@ class Universe():
 
         
         
-   
+    def plot_test_vegetativo(self, population_code):
+       
+        my_population = False
+        for population in self.population_centres:
+            if population.population_id == population_code:
+                my_population = population
+        
+        if my_population == False:
+            raise Exception("Population centre not found")
+        
+        
+        data  = {"NAT"  : my_population.natality_hist,
+                 "MOR"  : my_population.mortality_hist,
+                 "POB"  : my_population.population_hist,
+                 
+                 "POB_REAL"  : my_population.population_hist_real,
+                 "MOR_REAL"  : my_population.mortality_hist_real,
+                 "NAT_REAL"  : my_population.natality_hist_real,
+                 
+                 "YEAR" : my_population.year_hist}
+        
+        df = pd.DataFrame.from_dict(data)
+        
+        
+        
+        fig = make_subplots(
+                            rows=2, cols=2,
+                            specs=[[{}, {}],
+                            [{"colspan": 2}, None]],
+                            subplot_titles=("Natalidad","Mortalidad", "Población"))
+        
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["NAT_REAL"],
+                      name = "Nat obs",
+                      showlegend = True,
+                      legendgroup = "1",
+                      marker = dict(color = "blue")),
+                     row = 1, col = 1)
+        
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["NAT"],
+                      name = "Nat pred",
+                      showlegend = True,
+                      legendgroup = "1",
+                      marker = dict(color = "lightblue")),
+                     row = 1, col = 1)
+        
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["MOR_REAL"],
+                      name = "Mor obs",
+                      showlegend = True,
+                      legendgroup = "2",
+                      marker = dict(color = "green")),
+                     row = 1, col = 2)
+        
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["MOR"],
+                      name = "Mor pred",
+                      showlegend = True,
+                      legendgroup = "2",
+                      marker = dict(color = "lightgreen")),
+                     row = 1, col = 2)
+        
+        
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB_REAL"],
+                      name = "Pob obs",
+                      showlegend = True,
+                      legendgroup = "3",
+                      marker = dict(color = "red")),
+                     row = 2, col = 1)
+        
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB"],
+                      name = "Pob pred",
+                      showlegend = True,
+                      legendgroup = "3",
+                      marker = dict(color = "orange")),
+                     row = 2, col = 1)
+        
+  
+        
+        fig.update_layout(
+                    height     = 800, 
+                    width      = 1000, 
+                    title_text ="Evolución vegetativa en %s" % my_population.population_name 
+)
+  
+        
+        #fig.show()
+        return fig
+       
         
     
     def regression_metrics(self):

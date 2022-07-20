@@ -6,6 +6,7 @@ Created on Thu Mar 31 09:37:41 2022
 @author: jesus
 """
 
+from joblib import dump, load
 
 
 import tkinter as tk
@@ -222,6 +223,10 @@ class PlotPage(tk.Frame, Pages):
             fig = controller.universe.plot_in_out(int(Pages._id))    
             py.plot(fig, filename = "in_out.html", auto_open = True)
             
+        def button_5_plot():
+            fig = controller.universe.plot_test_vegetativo(int(Pages._id))    
+            py.plot(fig, filename = "test-vegetativo.html", auto_open = True)
+            
         ## All of these files mut de removed
         
         global comein_pic
@@ -254,8 +259,15 @@ class PlotPage(tk.Frame, Pages):
                   command = button_4_plot).pack()
         
         tk.Button(self,
+                  text = "TEST - VEGETATIVO",
+                  command = button_5_plot).pack()
+        
+        tk.Button(self,
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PopulationCentrePage)).pack()
+        
+        
+        
         
         button_destroy = tk.Button(self,
                                    text = "CERRAR",
@@ -292,6 +304,9 @@ if __name__ == "__main__":
     df_features_large_cities     = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
     df_income_spend_large_cities = pd.read_csv(path + "df_large_cities_income_spend_normal.csv")
     
+    path = "Modelos/"
+    natality_model  = load(path + "natality_model.joblib") 
+    mortality_model = load(path + "mortality_model.joblib")
     
     # betas: list of 11
     #beta_mdt, beta_pendi, beta_carretn, beta_aut,
@@ -310,12 +325,14 @@ if __name__ == "__main__":
                            betas  = list(np.random.uniform(0, 1, 11)),
                            gamma  = np.random.uniform(0, 1),
                            theta  = np.random.uniform(0, 1),
-                           alphas = list(np.random.uniform(0, 1, 3)))
+                           alphas = list(np.random.uniform(0, 1, 3)),
+                           natality_model  = natality_model,
+                           mortality_model = mortality_model)
     my_universe.Print()
 
     
         
-    for i in range(1, 2):
+    for i in range(1, 25):
         my_universe.update()
         my_universe.Print()
     

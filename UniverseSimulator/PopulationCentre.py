@@ -36,7 +36,9 @@ class PopulationCentre():
                  distatprim,
                  #salario,
                  #gasto,
-                 hom, muj, nat, mor):
+                 #hom, muj,):
+                 natality, mortality, #prediccion
+                 nat, mor): #real
                  #saldott):
         
         self.year = year
@@ -46,8 +48,14 @@ class PopulationCentre():
         self.num_men = num_men
         #self.num_women_init = muj
         self.num_women = num_women
-        self.natality = nat
-        self.mortality = mor
+        
+        
+        self.natality       = natality # nat
+        self.natality_real  = nat
+        self.mortality      = mortality # mor
+        self.mortality_real = mor
+        
+        
         #self.saldo_migratorio_total = saldott
         self.inhabitants = []
         #self.inhabitant = inhabitants
@@ -92,8 +100,16 @@ class PopulationCentre():
         self.mean_happiness = self.update_mean_happiness()
         
         ## PLOT. MULILINE CHART: POPULATION DYNAMICS
-        self.natality_hist  = []
-        self.mortality_hist = []
+        self.natality_hist        = []
+        self.natality_hist_real   = [] 
+        
+        self.mortality_hist       = []
+        self.mortality_hist_real  = []
+        
+        self.population_hist      = []
+        self.population_hist_real = []
+        
+        
         self.men_hist       = []
         self.women_hist     = []
         self.saldo_hist     = []
@@ -119,10 +135,28 @@ class PopulationCentre():
         
     
         
-    def update_population(self, nat, mor): #saldott):
-        self.natality = int(nat)
-        self.mortality = int(mor)
-        #self.saldo_migratorio_total = int(saldott)
+    def update_population(self, iteration = 1): #saldott):
+        if iteration == 0:
+            self.population_hist_real.append(int(self.num_men + self.num_women))
+        else:
+            try:
+                self.population_hist_real.append(int(self.population_hist_real[-1] + self.natality_hist_real[-1] - self.mortality_hist_real[-1]))
+            except:
+                self.population_hist_real.append(None)
+                
+            
+        try:
+            self.natality_hist_real.append(int(self.natality_real))
+        except:
+            self.natality_hist_real.append(self.natality_real)
+        try:
+            self.mortality_hist_real.append(int(self.mortality_real))
+        except:
+            self.mortality_hist_real.append(self.mortality_real)
+        
+        
+            
+        
         
         
     def update_population_hist(self):
@@ -130,6 +164,11 @@ class PopulationCentre():
         self.mortality_hist.append(int(self.mortality))
         self.men_hist.append(int(self.num_men))
         self.women_hist.append(int(self.num_women))
+        self.population_hist.append(int(self.num_men + self.num_women))
+        
+        
+        
+        
         #self.saldo_hist.append(int(self.saldo_migratorio_total))
         self.year_hist.append(int(self.year))
         
@@ -237,4 +276,5 @@ class PopulationCentre():
                 raise Exception("FAMILY WITHOUT KIDS BUT WITH PARENTS")
             
         print("\n")
+    
     
