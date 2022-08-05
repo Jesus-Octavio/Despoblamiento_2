@@ -38,7 +38,7 @@ class PopulationCentre():
                  #gasto,
                  #hom, muj,):
                  natality, mortality, #prediccion
-                 nat, mor): #real
+                 nat, mor, pob): #real
                  #saldott):
         
         self.year = year
@@ -54,7 +54,7 @@ class PopulationCentre():
         self.natality_real  = nat
         self.mortality      = mortality # mor
         self.mortality_real = mor
-        
+        self.pob_real       = pob
         
         #self.saldo_migratorio_total = saldott
         self.inhabitants = []
@@ -108,6 +108,7 @@ class PopulationCentre():
         
         self.population_hist      = []
         self.population_hist_real = []
+        self.population_hist_real_migr = []
         
         
         self.men_hist       = []
@@ -138,11 +139,19 @@ class PopulationCentre():
     def update_population(self, iteration = 1): #saldott):
         if iteration == 0:
             self.population_hist_real.append(int(self.num_men + self.num_women))
+            self.population_hist_real_migr.append(int(self.pob_real))
         else:
             try:
                 self.population_hist_real.append(int(self.population_hist_real[-1] + self.natality_hist_real[-1] - self.mortality_hist_real[-1]))
+                
             except:
                 self.population_hist_real.append(None)
+                
+                
+            try:
+                self.population_hist_real_migr.append(int(self.pob_real))
+            except:
+                self.population_hist_real_migr.append(None)
                 
             
         try:
@@ -153,6 +162,7 @@ class PopulationCentre():
             self.mortality_hist_real.append(int(self.mortality_real))
         except:
             self.mortality_hist_real.append(self.mortality_real)
+      
         
         
             

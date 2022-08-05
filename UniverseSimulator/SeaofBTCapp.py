@@ -7,7 +7,11 @@ Created on Thu Mar 31 09:37:41 2022
 """
 
 from joblib import dump, load
-
+import keras
+import tensorflow as tf
+from keras.models import Sequential
+from keras.layers import Dense
+ 
 
 import tkinter as tk
 from tkinter import messagebox
@@ -37,6 +41,7 @@ import sys
 
 
 LARGE_FONT = ("Verdana", 12)
+
 
 
 class Pages:
@@ -224,8 +229,14 @@ class PlotPage(tk.Frame, Pages):
             py.plot(fig, filename = "in_out.html", auto_open = True)
             
         def button_5_plot():
+            path_lineas   = "Graficos/Ciudades/Lineas/ann-linreg/"
             fig = controller.universe.plot_test_vegetativo(int(Pages._id))    
-            py.plot(fig, filename = "test-vegetativo.html", auto_open = True)
+            py.plot(fig, filename = path_lineas + str(Pages.name).replace(" ", "-") + "-lineas_ann-linreg.html", auto_open = True)
+            
+        def button_6_plot():
+            path_piramide = "Graficos/Ciudades/Piramide/ann-linreg/"
+            fig = controller.universe.plot_vegetativo_test_pyramid(int(Pages._id))    
+            py.plot(fig, filename = path_piramide + str(Pages.name).replace(" ", "-") + "-piramide_ann-linreg.html", auto_open = True)
             
         ## All of these files mut de removed
         
@@ -262,6 +273,11 @@ class PlotPage(tk.Frame, Pages):
                   text = "TEST - VEGETATIVO",
                   command = button_5_plot).pack()
         
+        
+        tk.Button(self,
+                  text = "TEST - VEGETATIVO - PIRAMIDE",
+                  command = button_6_plot).pack()
+        
         tk.Button(self,
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PopulationCentrePage)).pack()
@@ -295,18 +311,19 @@ if __name__ == "__main__":
     
     # COMARCA 2
     path             = "Dominio/Comarca_2/"
-    df_historic_ages = pd.read_csv(path + "df_2_historic_ages.csv")
-    df_families      = pd.read_csv(path + "df_2_families.csv")
-    df_features      = pd.read_csv(path + "df_2_infra_coords_normal.csv")
-    df_income_spend  = pd.read_csv(path + "df_2_income_spend_normal.csv") 
+    df_historic_ages = pd.read_csv(path + "df_large_cities_historic_ages.csv")
+    df_families      = pd.read_csv(path + "df_large_cities_families.csv")
+    df_features      = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
+    df_income_spend  = pd.read_csv(path + "df_large_cities_income_spend_normal.csv") 
     
     
     df_features_large_cities     = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
     df_income_spend_large_cities = pd.read_csv(path + "df_large_cities_income_spend_normal.csv")
     
     path = "Modelos/"
-    natality_model  = load(path + "natality_model.joblib") 
-    mortality_model = load(path + "mortality_model.joblib")
+    #keras.models.load_model
+    natality_model  = keras.models.load_model(path + "natality_model_subset_ann.h5")
+    mortality_model = load(path + "mortality_model_subset_linreg.joblib")
     
     # betas: list of 11
     #beta_mdt, beta_pendi, beta_carretn, beta_aut,
@@ -332,9 +349,9 @@ if __name__ == "__main__":
 
     
         
-    for i in range(1, 25):
+    for i in range(1, 20):
         my_universe.update()
-        my_universe.Print()
+        #my_universe.Print()
     
     
     #my_universe.regression_metrics()

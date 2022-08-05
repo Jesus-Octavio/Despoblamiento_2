@@ -168,7 +168,7 @@ class Universe():
             #my_cols   = ["HOM" + self.year, "MUJ" + self.year,
             #             "NAT" + self.year, "MOR" + self.year, 
             #            "SALDOTT" + self.year]
-            my_cols   = ["NAT" + self.year, "MOR" + self.year]
+            my_cols   = ["NAT" + self.year, "MOR" + self.year, "POB" + self.year]
             
             #my_cols_update = ["NAT", "MOR", "SALDOTT"]
             #my_cols_update = ["NAT", "MOR"]
@@ -242,7 +242,7 @@ class Universe():
             # Add specific population to the universe
             population_centres.append(the_population)
         
-        return  [population_centres, ["NAT", "MOR"]]
+        return  [population_centres, ["NAT", "MOR", "POB"]]
     
     
     def LargeCityBuilder(self): 
@@ -402,8 +402,17 @@ class Universe():
             df_X = pd.concat([temp_male.reset_index(drop=True),
                           temp_female.reset_index(drop=True)], axis=1)
     
-            mortality = self.mortality_model.predict(df_X) 
-            natality  = self.natality_model.predict(df_X)
+            df_X_natality = df_X[['H0A4', 'H5A9', 'H10A14', 'H15A19', 'H20A24', 'H25A29', 'H30A34',
+       'H35A39', 'H40A44', 'H45A49', 'H50A54', 'H55A59', 'M0A4', 'M5A9',
+       'M10A14', 'M15A19', 'M20A24', 'M25A29', 'M30A34', 'M35A39', 'M40A44',
+       'M45A49', 'M50A54', 'M55A59']]
+            
+            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84', 'H90A94', 'H95A99',
+       'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84', 'M90A94',
+       'M95A99', 'M100YMS']]
+    
+            mortality = self.mortality_model.predict(df_X_mortality) 
+            natality  = self.natality_model.predict(df_X_natality)
            
             
             mortality = 0 if mortality <= 0 else np.rint(mortality)
@@ -444,11 +453,11 @@ class Universe():
             
             ##### 3-4-5 people families #####
             # fam3p -> father + mother + kidx1
-            fam3p = df_temp["3PER"].values[0]
+            fam3p = df_temp["3PER"].values
             # fam4p -> father + mother + kidx2
-            fam4p = df_temp["4PER"].values[0]
+            fam4p = df_temp["4PER"].values
             # fam5p -> father + mother + kidx3
-            fam5p = df_temp["5PER"].values[0]
+            fam5p = df_temp["5PER"].values
             
             # Total families with kids
             fam = fam3p + fam4p + fam5p
@@ -466,7 +475,6 @@ class Universe():
             fam5p = math.ceil(num_kids * (fam5p / fam))
             
             # UNCOMMIT TO CHECK RESULTS
-            #print("Nº of kids: %s" % num_kids)
             #print("Nº of families with 1 kid : %s"  % fam3p)
             #print("Nº of families with 2 kids: %s" % int(math.ceil(fam4p / 2)))
             #print("Nº of families with 3 kids: %s" % int(math.ceil(fam5p / 3)))
@@ -946,14 +954,20 @@ class Universe():
                     if column == "NAT":
                         population.natality_real =  self.df_historic_ages.\
                             query('CODMUN == ' + str(population.population_id))[column+self.year].values
-                    else:
+                    elif column == "MOR":
                         population.mortality_real =  self.df_historic_ages.\
                             query('CODMUN == ' + str(population.population_id))[column+self.year].values
+                    else:
+                        population.pob_real =  self.df_historic_ages.\
+                            query('CODMUN == ' + str(population.population_id))[column+self.year].values
+                            
                 else:
                     if column == "NAT":
                         population.natality_real  = None
-                    else:
+                    elif column == "MOR":
                         population.mortality_real = None
+                    else:
+                        population.pob_real       = None
                     
             
             population.update_population()            
@@ -982,9 +996,18 @@ class Universe():
             temp_female.columns = ["M" + x.replace("-", "A") if "-" in x else "M100YMS" for x in temp_female.columns]
             df_X = pd.concat([temp_male.reset_index(drop=True),
                           temp_female.reset_index(drop=True)], axis=1)
+                
+            df_X_natality = df_X[['H0A4', 'H5A9', 'H10A14', 'H15A19', 'H20A24', 'H25A29', 'H30A34',
+       'H35A39', 'H40A44', 'H45A49', 'H50A54', 'H55A59', 'M0A4', 'M5A9',
+       'M10A14', 'M15A19', 'M20A24', 'M25A29', 'M30A34', 'M35A39', 'M40A44',
+       'M45A49', 'M50A54', 'M55A59']]
+            
+            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84', 'H90A94', 'H95A99',
+       'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84', 'M90A94',
+       'M95A99', 'M100YMS']]
     
-            mortality = self.mortality_model.predict(df_X) 
-            natality  = self.natality_model.predict(df_X)
+            mortality = self.mortality_model.predict(df_X_mortality) 
+            natality  = self.natality_model.predict(df_X_natality)
             #print("Mortality %f" % int(mortality))
             #print("Natality %f" % int(natality))
             #print("\n")
@@ -1103,7 +1126,7 @@ class Universe():
         
         fig.add_trace(go.Bar(
                           y = df.index.values.tolist(),
-                          x = df.iloc[:, 0],
+                          x = - df.iloc[:, 0],
                           name  = "Hombres",
                           marker_color = "blue",
                           orientation = "h",
@@ -1112,7 +1135,7 @@ class Universe():
             
         fig.add_trace(go.Bar(
                           y = df.index.values.tolist(),
-                          x = - df.iloc[:, 1],
+                          x =  df.iloc[:, 1],
                           name  = "Mujeres",
                           marker_color = "orange",
                           orientation = "h",
@@ -1165,7 +1188,7 @@ class Universe():
 
             fig.add_trace(go.Bar(
                           y = df.index.values.tolist(),
-                          x = df.iloc[:, i],
+                          x = - df.iloc[:, i],
                           name  = "Hombres",
                           marker_color = "blue",
                           orientation = "h",
@@ -1174,7 +1197,7 @@ class Universe():
             
             fig.add_trace(go.Bar(
                           y = df.index.values.tolist(),
-                          x = - df.iloc[:, i + 1],
+                          x =  df.iloc[:, i + 1],
                           name  = "Mujeres",
                           marker_color = "orange",
                           orientation = "h",
@@ -1375,7 +1398,7 @@ class Universe():
                  "POB_REAL"  : my_population.population_hist_real,
                  "MOR_REAL"  : my_population.mortality_hist_real,
                  "NAT_REAL"  : my_population.natality_hist_real,
-                 
+                 "POB_REAL_SVG_MIGR" : my_population.population_hist_real_migr,
                  "YEAR" : my_population.year_hist}
         
         df = pd.DataFrame.from_dict(data)
@@ -1389,28 +1412,28 @@ class Universe():
                             subplot_titles=("Natalidad","Mortalidad", "Población"))
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["NAT_REAL"],
-                      name = "Nat obs",
+                      name = "Natalidad observación",
                       showlegend = True,
                       legendgroup = "1",
                       marker = dict(color = "blue")),
                      row = 1, col = 1)
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["NAT"],
-                      name = "Nat pred",
+                      name = "Natalidad predicción",
                       showlegend = True,
                       legendgroup = "1",
                       marker = dict(color = "lightblue")),
                      row = 1, col = 1)
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["MOR_REAL"],
-                      name = "Mor obs",
+                      name = "Mortalidad observación",
                       showlegend = True,
                       legendgroup = "2",
                       marker = dict(color = "green")),
                      row = 1, col = 2)
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["MOR"],
-                      name = "Mor pred",
+                      name = "Mortalidad predicción",
                       showlegend = True,
                       legendgroup = "2",
                       marker = dict(color = "lightgreen")),
@@ -1418,30 +1441,120 @@ class Universe():
         
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB_REAL"],
-                      name = "Pob obs",
+                      name = "Población obsservación (SVEG)",
                       showlegend = True,
                       legendgroup = "3",
                       marker = dict(color = "red")),
                      row = 2, col = 1)
         
-        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB"],
-                      name = "Pob pred",
+        
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB_REAL_SVG_MIGR"],
+                      name = "Población obsservación (SVEG, MIGR)",
                       showlegend = True,
                       legendgroup = "3",
                       marker = dict(color = "orange")),
                      row = 2, col = 1)
         
+        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB"],
+                      name = "Población predicción",
+                      showlegend = True,
+                      legendgroup = "3",
+                      marker = dict(color = "yellow")),
+                     row = 2, col = 1)
+        
   
         
         fig.update_layout(
-                    height     = 800, 
-                    width      = 1000, 
                     title_text ="Evolución vegetativa en %s" % my_population.population_name 
 )
   
         
         #fig.show()
         return fig
+    
+    
+    def plot_vegetativo_test_pyramid(self, population_code):
+        
+        year = 2021
+        
+        my_population = False
+        for population in self.population_centres:
+            if population.population_id == population_code:
+                my_population = population
+        
+        if my_population == False:
+            raise Exception("Population centre not found")
+        
+        
+        
+        path = "/home/jesus/Escritorio/PIRAMIDE/pyramid.csv"
+        pyramid = pd.read_csv(path)
+        if population_code not in pyramid["CODMUN"].values:
+            raise Exception("POPULATION CENTRE WITH CODE %s NOT FOUND" % population_code)
+        y_age = pyramid[pyramid["CODMUN"] == population_code]["Rango"]
+        x_m = pyramid[pyramid["CODMUN"] == population_code]["Total_HOM"]
+        x_f = - pyramid[pyramid["CODMUN"] == population_code]["Total_MUJ"]
+
+
+        
+        df = pd.DataFrame.from_dict(my_population.ages_hist)        
+        my_cols = [col for col in df.columns if str(year) in col]
+        df = df[my_cols]
+
+        fig = go.Figure()
+        
+        fig.add_trace(go.Bar(
+                          y = df.index.values.tolist(),
+                          x = - df.iloc[:, 0],
+                          name  = "Hombres Predicción",
+                          marker_color = "blue",
+                          text= df.iloc[:, 0].astype('int'),
+                          orientation = "h",
+                          showlegend = True),
+                          )
+            
+        fig.add_trace(go.Bar(
+                        y = df.index.values.tolist(),
+                        x = - x_m, 
+                        hoverinfo = 'text',
+                        name  = "Hombres Obseravción",
+                        orientation = 'h',
+                        text = x_m.astype('int'),
+                        opacity=0.5,
+                        marker=dict(color='lightblue')))
+            
+        fig.add_trace(go.Bar(
+                          y = df.index.values.tolist(),
+                          x = df.iloc[:, 1],
+                          name  = "Mujeres Predicción",
+                          text = df.iloc[:, 1].astype('int'),
+                          marker_color = "red",
+                          orientation = "h",
+                          showlegend = True),
+                          )
+            
+        fig.add_trace(go.Bar(
+                        y = df.index.values.tolist(),
+                        x = - x_f, 
+                        orientation = 'h',
+                        name  = "Mujeres Observación",
+                        hoverinfo = 'text',
+                        text = -1 * x_f.astype('int'),
+                        opacity=0.5,
+                        marker=dict(color='orange')))
+        
+        fig.update_layout(barmode = 'overlay', #overlay
+                               bargap = 0, bargroupgap = 1)
+        fig.update_xaxes(tickangle = 90)
+        
+        fig.update_layout(
+                    title_text="Pirámide poblacional de %s en %s " 
+                        % (my_population.population_name, year),
+                    bargap = 0.0, bargroupgap = 0,)
+        #fig.show()
+        return fig
+        
+        
        
         
     
