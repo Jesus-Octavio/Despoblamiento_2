@@ -9,8 +9,6 @@ Created on Thu Mar 31 09:37:41 2022
 from joblib import dump, load
 import keras
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import Dense
  
 
 import tkinter as tk
@@ -303,60 +301,3 @@ class PlotPage(tk.Frame, Pages):
         
 
 
-
-     
-if __name__ == "__main__":
-    
-    year             = 2010
-    
-    # COMARCA 2
-    path             = "Dominio/Comarca_2/"
-    df_historic_ages = pd.read_csv(path + "df_2_historic_ages.csv")
-    df_families      = pd.read_csv(path + "df_2_families.csv")
-    df_features      = pd.read_csv(path + "df_2_infra_coords_normal.csv")
-    df_income_spend  = pd.read_csv(path + "df_2_income_spend_normal.csv") 
-    
-    
-    df_features_large_cities     = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
-    df_income_spend_large_cities = pd.read_csv(path + "df_large_cities_income_spend_normal.csv")
-    
-    path = "Modelos/"
-    #keras.models.load_model
-    natality_model  = keras.models.load_model(path + "natality_model_subset_ann.h5")
-    mortality_model = load(path + "mortality_model_subset_linreg.joblib")
-    
-    # betas: list of 11
-    #beta_mdt, beta_pendi, beta_carretn, beta_aut,
-    #beta_ferr, beta_dis10m, beta_hospi, beta_farma,
-    #beta_ceduc, beta_curgh, beta_arptim
-    
-    # gamma: parameter for subjective norm
-                 
-    my_universe = Universe(year                         = year,
-                           df_historic_ages             = df_historic_ages,
-                           df_families                  = df_families,
-                           df_features                  = df_features,
-                           df_income_spend              = df_income_spend,
-                           df_features_large_cities     = df_features_large_cities,
-                           df_income_spend_large_cities = df_income_spend_large_cities,
-                           betas  = list(np.random.uniform(0, 1, 11)),
-                           gamma  = np.random.uniform(0, 1),
-                           theta  = np.random.uniform(0, 1),
-                           alphas = list(np.random.uniform(0, 1, 3)),
-                           natality_model  = natality_model,
-                           mortality_model = mortality_model)
-    my_universe.Print()
-
-    
-        
-    for i in range(1, 5):
-        my_universe.update()
-        #my_universe.Print()
-    
-    
-    #my_universe.regression_metrics()
-    app = SeaofBTCapp(universe = my_universe)
-    app.mainloop()
-       
-#app = SeaofBTCapp()
-#app.mainloop()

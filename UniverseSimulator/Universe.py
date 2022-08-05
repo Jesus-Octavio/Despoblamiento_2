@@ -1137,6 +1137,7 @@ class Universe():
                           x =  df.iloc[:, 1],
                           name  = "Mujeres",
                           marker_color = "orange",
+                          showlegend = False,
                           orientation = "h",))
         
         fig.add_annotation(x = int(np.min(- df.iloc[:, 0])),
