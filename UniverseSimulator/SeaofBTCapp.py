@@ -311,10 +311,10 @@ if __name__ == "__main__":
     
     # COMARCA 2
     path             = "Dominio/Comarca_2/"
-    df_historic_ages = pd.read_csv(path + "df_large_cities_historic_ages.csv")
-    df_families      = pd.read_csv(path + "df_large_cities_families.csv")
-    df_features      = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
-    df_income_spend  = pd.read_csv(path + "df_large_cities_income_spend_normal.csv") 
+    df_historic_ages = pd.read_csv(path + "df_2_historic_ages.csv")
+    df_families      = pd.read_csv(path + "df_2_families.csv")
+    df_features      = pd.read_csv(path + "df_2_infra_coords_normal.csv")
+    df_income_spend  = pd.read_csv(path + "df_2_income_spend_normal.csv") 
     
     
     df_features_large_cities     = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
@@ -349,7 +349,7 @@ if __name__ == "__main__":
 
     
         
-    for i in range(1, 20):
+    for i in range(1, 5):
         my_universe.update()
         #my_universe.Print()
     

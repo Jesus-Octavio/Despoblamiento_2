@@ -1129,18 +1129,27 @@ class Universe():
                           x = - df.iloc[:, 0],
                           name  = "Hombres",
                           marker_color = "blue",
-                          orientation = "h",
-                          showlegend = True),
-                          )
+                          orientation = "h",))
+            
             
         fig.add_trace(go.Bar(
                           y = df.index.values.tolist(),
                           x =  df.iloc[:, 1],
                           name  = "Mujeres",
                           marker_color = "orange",
-                          orientation = "h",
-                          showlegend = True),
-                          )
+                          orientation = "h",))
+        
+        fig.add_annotation(x = int(np.min(- df.iloc[:, 0])),
+                           y = 20,
+                           text = "<b>Hombres<b>",
+                           showarrow = False,
+                           font = {"size":15})
+
+        fig.add_annotation(x = int(np.max(df.iloc[:, 1])),
+                           y = 20,
+                           text = "<b>Mujeres<b>",
+                           showarrow = False,
+                           font = {"size":15})
             
         fig.update_layout(barmode = 'relative',
                                bargap = 0.0, bargroupgap = 0)
@@ -1148,8 +1157,7 @@ class Universe():
         
         fig.update_layout(
                     title_text="Pirámide poblacional de %s en %s " 
-                        % (my_population.population_name, year),
-                    bargap = 0.0, bargroupgap = 0,)
+                        % (my_population.population_name, year))
         #fig.show()
         return fig
         
@@ -1493,7 +1501,7 @@ class Universe():
             raise Exception("POPULATION CENTRE WITH CODE %s NOT FOUND" % population_code)
         y_age = pyramid[pyramid["CODMUN"] == population_code]["Rango"]
         x_m = pyramid[pyramid["CODMUN"] == population_code]["Total_HOM"]
-        x_f = - pyramid[pyramid["CODMUN"] == population_code]["Total_MUJ"]
+        x_f = pyramid[pyramid["CODMUN"] == population_code]["Total_MUJ"]
 
 
         
@@ -1501,56 +1509,82 @@ class Universe():
         my_cols = [col for col in df.columns if str(year) in col]
         df = df[my_cols]
 
+       
         fig = go.Figure()
         
-        fig.add_trace(go.Bar(
+        fig.add_trace(go.Scatter(
                           y = df.index.values.tolist(),
                           x = - df.iloc[:, 0],
-                          name  = "Hombres Predicción",
+                          name  = "Predicción", #Hombres
                           marker_color = "blue",
-                          text= df.iloc[:, 0].astype('int'),
-                          orientation = "h",
-                          showlegend = True),
-                          )
+                          mode = "lines",
+                          showlegend = True))
             
+        
+        fig.add_trace(go.Scatter(
+                        y = df.index.values.tolist(),
+                        x = - x_m, 
+                        name  = "Observación", #Hombres
+                        mode = "lines",
+                        showlegend = True,
+                        marker=dict(color='red')))
+        
         fig.add_trace(go.Bar(
                         y = df.index.values.tolist(),
                         x = - x_m, 
-                        hoverinfo = 'text',
-                        name  = "Hombres Obseravción",
+                        name  = "Hombres Observación",
                         orientation = 'h',
-                        text = x_m.astype('int'),
-                        opacity=0.5,
-                        marker=dict(color='lightblue')))
+                        opacity = 0.5,
+                        showlegend = False,
+                        marker=dict(color='red')))
             
-        fig.add_trace(go.Bar(
+        fig.add_trace(go.Scatter(
                           y = df.index.values.tolist(),
                           x = df.iloc[:, 1],
                           name  = "Mujeres Predicción",
-                          text = df.iloc[:, 1].astype('int'),
-                          marker_color = "red",
+                          marker_color = "blue",
+                          mode = "lines",
                           orientation = "h",
-                          showlegend = True),
-                          )
+                          showlegend = False))
+        
+        fig.add_trace(go.Scatter(
+                         y = df.index.values.tolist(),
+                        x = x_f, 
+                        name  = "Mujeres Observación",
+                        mode = "lines",
+                        showlegend = False,
+                        marker=dict(color='red')))
             
         fig.add_trace(go.Bar(
                         y = df.index.values.tolist(),
-                        x = - x_f, 
-                        orientation = 'h',
+                        x = x_f, 
                         name  = "Mujeres Observación",
-                        hoverinfo = 'text',
-                        text = -1 * x_f.astype('int'),
-                        opacity=0.5,
-                        marker=dict(color='orange')))
+                        orientation = 'h',
+                        opacity = 0.5,
+                        showlegend = False,
+                        marker=dict(color='red')))
         
-        fig.update_layout(barmode = 'overlay', #overlay
-                               bargap = 0, bargroupgap = 1)
+        
+        fig.add_annotation(x = int(np.min(- x_m)),
+                           y = 20,
+                           text = "<b>Hombres<b>",
+                           showarrow = False,
+                           font = {"size":15})
+
+        fig.add_annotation(x = int(np.max(x_f)),
+                           y = 20,
+                           text = "<b>Mujeres<b>",
+                           showarrow = False,
+                           font = {"size":15})
+        
+        fig.update_layout(barmode = 'overlay') #overlay)
+        
         fig.update_xaxes(tickangle = 90)
         
-        fig.update_layout(
-                    title_text="Pirámide poblacional de %s en %s " 
+        fig.update_layout(title_text="Pirámide poblacional de %s en %s " 
                         % (my_population.population_name, year),
-                    bargap = 0.0, bargroupgap = 0,)
+                           bargap = 0.0,
+                           bargroupgap = 0)
         #fig.show()
         return fig
         
