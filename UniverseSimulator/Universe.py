@@ -1500,7 +1500,7 @@ class Universe():
         pyramid = pd.read_csv(path)
         if population_code not in pyramid["CODMUN"].values:
             raise Exception("POPULATION CENTRE WITH CODE %s NOT FOUND" % population_code)
-        y_age = pyramid[pyramid["CODMUN"] == population_code]["Rango"]
+        #y_age = pyramid[pyramid["CODMUN"] == population_code]["Rango"]
         x_m = pyramid[pyramid["CODMUN"] == population_code]["Total_HOM"]
         x_f = pyramid[pyramid["CODMUN"] == population_code]["Total_MUJ"]
 
