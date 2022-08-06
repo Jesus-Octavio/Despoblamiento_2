@@ -54,23 +54,23 @@ class SeaofBTCapp(Pages, tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         container = tk.Frame(self)
 
-        container.pack(side="top", fill="both", expand = True)
+        container.pack(side = "top", fill = "both", expand = True)
 
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        container.grid_rowconfigure(0, weight = 1)
+        container.grid_columnconfigure(0, weight = 1)
 
         self.universe = universe
         self.frames = {}
+        
 
-        for F in (StartPage, PageOne, PopulationCentrePage, PlotPage, YearsPage):
+        for F in (StartPage, PageOne, PopulationCentrePage, PlotPage, YearsPage,
+                  YearsPageBA):
 
             frame = F(container, self)
-
             self.frames[F] = frame
+            frame.grid(row = 0, column = 0, sticky="nsew")
+    
             
-            
-            frame.grid(row=0, column=0, sticky="nsew")
-
         self.show_frame(StartPage)
         
         
@@ -130,7 +130,7 @@ class PopulationCentrePage(Pages, tk.Frame,):
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
-        var = tk.StringVar()
+        #var = tk.StringVar()
 
         def selection():
             towns_names = []
@@ -178,7 +178,7 @@ class PopulationCentrePage(Pages, tk.Frame,):
     
 
 
-class YearsPage(Pages, tk.Frame,):
+class YearsPage(Pages, tk.Frame):
     
     def __init__(self, parent, controller):
         
@@ -187,8 +187,7 @@ class YearsPage(Pages, tk.Frame,):
             py.plot(fig, filename = "piramide.html", auto_open = True)
         
         tk.Frame.__init__(self, parent)
-        
-        
+                
         #_id = int(Pages._id)
         #for item in range(len(controller.universe.population_centres)):
         #    if item.population_id == _id:
@@ -199,14 +198,36 @@ class YearsPage(Pages, tk.Frame,):
         for year in years:
             tk.Button(self,
                   text = "AÑO %s" % year, 
-                  command = lambda year=year: plotter(int(year))).pack()
+                  command = lambda year = year: plotter(int(year))).pack()
+                  
+        tk.Button(self,
+                  text = "ATRÁS",
+                  command = lambda: controller.show_frame(PlotPage)).pack()
+
+
+class YearsPageBA(Pages, tk.Frame):
+    
+    def __init__(self, parent, controller):
+        
+        def plotter(year):
+            fig = controller.universe.plot_behavioural_attitude(int(Pages._id), year)    
+            py.plot(fig, filename = "tpb_ba.html", auto_open = True)
+        
+        tk.Frame.__init__(self, parent)
+        
+        years = list(controller.universe.population_centres[0].year_hist[1:])
+        
+        for year in years:
+            tk.Button(self,
+                  text = "AÑO %s" % year, 
+                  command = lambda year = year: plotter(int(year))).pack()
                   
         tk.Button(self,
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PlotPage)).pack()
 
  
-class PlotPage(tk.Frame, Pages):
+class PlotPage(Pages, tk.Frame,):
     
     def __init__(self, parent, controller):
         
@@ -235,6 +256,10 @@ class PlotPage(tk.Frame, Pages):
             path_piramide = "Graficos/Ciudades/Piramide/ann-linreg/"
             fig = controller.universe.plot_vegetativo_test_pyramid(int(Pages._id))    
             py.plot(fig, filename = path_piramide + str(Pages.name).replace(" ", "-") + "-piramide_ann-linreg.html", auto_open = True)
+            
+        def button_7_plot():
+            fig = controller.universe.plot_behavioural_attitude(int(Pages._id))    
+            py.plot(fig, filename = "tpb_ba.html", auto_open = True)
             
         ## All of these files mut de removed
         
@@ -271,17 +296,17 @@ class PlotPage(tk.Frame, Pages):
                   text = "TEST - VEGETATIVO",
                   command = button_5_plot).pack()
         
-        
         tk.Button(self,
                   text = "TEST - VEGETATIVO - PIRAMIDE",
                   command = button_6_plot).pack()
         
         tk.Button(self,
+                  text = "TPB - Behavioural Attitude (BA)",
+                  command = lambda: controller.show_frame(YearsPageBA)).pack()
+        
+        tk.Button(self,
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PopulationCentrePage)).pack()
-        
-        
-        
         
         button_destroy = tk.Button(self,
                                    text = "CERRAR",

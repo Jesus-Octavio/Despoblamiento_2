@@ -55,22 +55,27 @@ if __name__ == "__main__":
     path             = "Dominio/Comarca_2/"
     df_historic_ages = pd.read_csv(path + "df_2_historic_ages.csv")
     df_families      = pd.read_csv(path + "df_2_families.csv")
-    df_features      = pd.read_csv(path + "df_2_infra_coords_normal.csv")
+    df_features      = pd.read_csv(path + "df_2_infra_coords.csv")
     df_income_spend  = pd.read_csv(path + "df_2_income_spend_normal.csv") 
     
-    
+    # Large Cities
     df_features_large_cities     = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
     df_income_spend_large_cities = pd.read_csv(path + "df_large_cities_income_spend_normal.csv")
     
+    # Subjective norm (social)
+    path             = "Dominio/Social_Norm/"
+    df_social = pd.read_csv(path + "df_social.csv")
+    
+    # Natality and mortality models
     path = "Modelos/"
     #keras.models.load_model
     natality_model  = keras.models.load_model(path + "natality_model_subset_ann.h5")
     mortality_model = load(path + "mortality_model_subset_linreg.joblib")
     
-    # betas: list of 11
-    #beta_mdt, beta_pendi, beta_carretn, beta_aut,
-    #beta_ferr, beta_dis10m, beta_hospi, beta_farma,
-    #beta_ceduc, beta_curgh, beta_arptim
+    # betas: list of 3
+    # beta[0] -> slope and height above the sea
+    # beta[1] -> distance 10k, road, highway, railroad, 
+    # beta[2] -> hostital, pharmacy, education, emergency, healthcare 
     
     # gamma: parameter for subjective norm
                  
@@ -80,8 +85,9 @@ if __name__ == "__main__":
                            df_features                  = df_features,
                            df_income_spend              = df_income_spend,
                            df_features_large_cities     = df_features_large_cities,
+                           df_social                    = df_social,
                            df_income_spend_large_cities = df_income_spend_large_cities,
-                           betas  = list(np.random.uniform(0, 1, 11)),
+                           betas  = list(np.random.uniform(0, 1, 3)),
                            gamma  = np.random.uniform(0, 1),
                            theta  = np.random.uniform(0, 1),
                            alphas = list(np.random.uniform(0, 1, 3)),
@@ -91,9 +97,9 @@ if __name__ == "__main__":
 
     
         
-    for i in range(1, 5):
+    for i in range(1, 2):
         my_universe.update()
-        #my_universe.Print()
+        my_universe.Print()
     
     
     #my_universe.regression_metrics()

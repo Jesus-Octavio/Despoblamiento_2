@@ -24,7 +24,6 @@ class PopulationCentre():
                  num_men, num_women,
                  longitud, latitud,
                  minmdt, maxmdt, meanmdt, stdmdt,
-                 minpendi, maxpendi, meanpendi, stdpendi,
                  mindisn10m, maxdisn10m, meandisn10m, stddisn10m,
                  mincarretn, maxcarretn, meancarretn, stdcarretn,
                  mindisaut, maxdisaut, meandisaut, stddisaut,
@@ -49,6 +48,7 @@ class PopulationCentre():
         #self.num_women_init = muj
         self.num_women = num_women
         
+       
         
         self.natality       = natality # nat
         self.natality_real  = nat
@@ -67,10 +67,6 @@ class PopulationCentre():
         self.maxmdt      = maxmdt
         self.meanmdt     = meanmdt
         self.stdmdt      = stdmdt
-        self.minpendi    = minpendi
-        self.maxpendi    = maxpendi
-        self.meanpendi   = meanpendi
-        self.stdpendi    = stdpendi
         self.mindisn10m  = mindisn10m
         self.maxdisn10m  = maxdisn10m
         self.meandisn10m = meandisn10m
@@ -134,7 +130,10 @@ class PopulationCentre():
         self.families_hist = {}
         ######################################################################
         
-    
+        ##################### THEORY OF PLANNED BEHAVIOUR #####################
+        self.ba_hist = {}
+        
+        
         
     def update_population(self, iteration = 1): #saldott):
         if iteration == 0:
@@ -229,10 +228,6 @@ class PopulationCentre():
         print("Man  height above the sea level (m):     %f" % self.maxmdt)
         print("Mean height above the sea level (m):     %f" % self.meanmdt)
         print("Std  height above the sea level (m):     %f" % self.stdmdt)
-        print("Min  slope (m):                          %f" % self.minpendi)
-        print("Max  slope (m):                          %f" % self.maxpendi)
-        print("Mean slope (m):                          %f" % self.meanpendi)
-        print("Std  slope (m):                          %f" % self.stdpendi)
         print("Min  distance to a 10k pop. centre (m):  %f" % self.mindisn10m)
         print("Max  distance to a 10k pop. centre (m):  %f" % self.maxdisn10m)
         print("Mean distance to a 10k pop. centre (m):  %f" % self.meandisn10m)

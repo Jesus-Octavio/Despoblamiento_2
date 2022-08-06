@@ -17,23 +17,37 @@ from Family_version_3 import Fam_kids
 
 class Agents():
     
-    def __init__(self, identifier, sex, age, population_centre,
-                 mdt, pendi, carretn, aut, ferr, dis10m,
-                 hospi, farma, ceduc, curgh, atprim,
+    def __init__(self,
+                 identifier,
+                 sex,
+                 age,
+                 population_centre,
+                 population_others,
+                 mdt,
+                 carretn,
+                 aut,
+                 ferr,
+                 dis10m,
+                 hospi,
+                 farma,
+                 ceduc,
+                 curgh,
+                 atprim,
                  betas):
+        
+        
         # AGENTS/PEOPLE CONSTRUCTOR
         
         self.person_id         = identifier
         self.sex               = sex
         self.age               = age
         self.population_centre = population_centre
+        self.population_others = population_others
         
         # RELATED TO FEATURES OF THEIR POPULATION CENTRE
         # Data about the agent's location
         # Height abput the sea level
         self.mdt      = mdt
-        # Slope
-        self.pendi    = pendi
         # Distance to road
         self.carretn  = carretn
         # Distance to highway
@@ -54,65 +68,16 @@ class Agents():
         self.atprim   = atprim
         
         
-        ##################### THEORY OF PLANNED BEHAVIOUR #####################
-        # BEHAVIOURAL ATTITUDE
-        # Following Vietnam PAPER
-        #ba = np.random.uniform(0,1,11)
-        #ba = [(x - min(ba)) / (max(ba) - min(ba)) for x in ba]
-        #ba = [x / sum(ba) for x in ba]
-        
-        # Height abput the sea level
-        #self.beta_mdt      = ba[0]
-        # Slope
-        #self.beta_pendi    = ba[1]
-        # Distance to road
-        #self.beta_carretn  = ba[2]
-        # Distance to highway
-        #self.beta_aut      = ba[3]
-        # Distance to railroads
-        #self.beta_ferr     = ba[4]
-        # Distamce to 10k population centre
-        #self.beta_dis10m   = ba[5]
-        # Distance to hospital
-        #self.beta_hospi    = ba[6]
-        # Distamce to pharmacy
-        #self.beta_farma    = ba[7]
-        # Distance to education centre
-        #self.beta_ceduc    = ba[8]
-        # Distance to emergency centre
-        #self.beta_curgh    = ba[9]
-        # Distance to primary healthcare centre
-        #self.beta_atprim   = ba[10]
-        
         # Following Vietnam THESIS
         self.betas = betas
-        ba = [np.random.uniform(1, x) for x in self.betas]
+        ba = [np.random.uniform(0, x) for x in self.betas]
         ba = [x / sum(ba) for x in ba]
+
+        self.beta_0 = ba[0]
+        self.beta_1 = ba[1]
+        self.beta_2 = ba[2]
         
-        # Height abput the sea level
-        self.beta_mdt      = ba[0]
-        # Slope
-        self.beta_pendi    = ba[1]
-        # Distance to road
-        self.beta_carretn  = ba[2]
-        # Distance to highway
-        self.beta_aut      = ba[3]
-        # Distance to railroads
-        self.beta_ferr     = ba[4]
-        # Distamce to 10k population centre
-        self.beta_dis10m   = ba[5]
-        # Distance to hospital
-        self.beta_hospi    = ba[6]
-        # Distamce to pharmacy
-        self.beta_farma    = ba[7]
-        # Distance to education centre
-        self.beta_ceduc    = ba[8]
-        # Distance to emergency centre
-        self.beta_curgh    = ba[9]
-        # Distance to primary healthcare centre
-        self.beta_atprim   = ba[10]
-        
-        
+        self.ba_hist = {}
         
         
         # Features about the place each person is living in
@@ -137,19 +102,74 @@ class Agents():
     
     def behavioural_attitude(self):
         """
-        Theory of planned behaviour: behavioural attitude
+        Theory of planned behaviour: behavioural attitude.
         """
-        return None
+        
+        year = self.population_centre.year
+        if year in self.population_centre.ba_hist.keys():
+            pass
+        else:
+            self.population_centre.ba_hist[year] = {}
+        
+        
+        #print("Currently living in %s" % self.population_centre.population_name)
+        temp = self.population_others.copy()
+        temp.remove(self.population_centre)
+        #for elem in temp:
+        #    print("Other %s" % elem.population_name)
+        #print("\n")
+        #return None
+        factor_0 = self.beta_0 * self.mdt
+    
+        factor_1 = self.beta_1 * np.mean([self.carretn, self.aut,
+                                          self.ferr, self.dis10m])
+    
+        factor_2 = self.beta_2 * np.mean([self.hospi, self.farma, self.ceduc,
+                                          self.curgh, self.atprim])
+        
+        ba_current = factor_0 + factor_1 + factor_2
+        
+        self.ba_hist[self.population_centre.population_id] = float(ba_current)
+        
+        if not self.population_centre.population_id in self.population_centre.ba_hist[year].keys():
+            self.population_centre.ba_hist[year][self.population_centre.population_id] = [float(ba_current)]
+        else:
+            self.population_centre.ba_hist[year][self.population_centre.population_id].append(float(ba_current))
+        
+        
+        for elem in temp:
+            
+            factor_0 = self.beta_0 * elem.meanmdt
+            
+            factor_1 = self.beta_1 * np.mean([elem.meancarretn, elem.meandisaut,
+                                              elem.meandisferr, elem.meandisn10m])
+    
+            factor_2 = self.beta_2 * np.mean([elem.disthospit, elem.distfarma, 
+                                              elem.distceduc, elem.distcurgh,
+                                              elem.distatprim])
+    
+            ba_current = factor_0 + factor_1 + factor_2
+            
+            self.ba_hist[elem.population_id] = float(ba_current)
+            
+            if not elem.population_id in self.population_centre.ba_hist[year].keys():
+                self.population_centre.ba_hist[year][elem.population_id] = [float(ba_current)]
+            else:
+                self.population_centre.ba_hist[year][elem.population_id].append(float(ba_current))
+            
+
+            
+        
     
     def perceived_beahavioural_control(self):
         """
-        Theory of planned behaviour. perceived behavioural control
+        Theory of planned behaviour. perceived behavioural control.
         """
         return None
     
     def subjective_norm(self):
         """
-        Theory of planned behaviour: subjective norm
+        Theory of planned behaviour: subjective norm.
         
         """
         return None

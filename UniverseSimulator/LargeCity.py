@@ -13,7 +13,6 @@ class LargeCity():
                  identifier, name,
                  longitud, latitud,
                  minmdt, maxmdt, meanmdt, stdmdt,
-                 minpendi, maxpendi, meanpendi, stdpendi,
                  mindisn10m, maxdisn10m, meandisn10m, stddisn10m,
                  mincarretn, maxcarretn, meancarretn, stdcarretn,
                  mindisaut, maxdisaut, meandisaut, stddisaut,
@@ -36,10 +35,6 @@ class LargeCity():
         self.maxmdt      = maxmdt
         self.meanmdt     = meanmdt
         self.stdmdt      = stdmdt
-        self.minpendi    = minpendi
-        self.maxpendi    = maxpendi
-        self.meanpendi   = meanpendi
-        self.stdpendi    = stdpendi
         self.mindisn10m  = mindisn10m
         self.maxdisn10m  = maxdisn10m
         self.meandisn10m = meandisn10m

@@ -83,7 +83,7 @@ class Universe():
                  df_income_spend,
                  df_features_large_cities,
                  df_income_spend_large_cities,
-                 
+                 df_social,
                  # TPB: Behavioural attitude
                  betas, #list/array of 11
                  # TPB: Subjective norm
@@ -121,6 +121,7 @@ class Universe():
         self.df_families     = df_families
         self.df_features     = df_features
         self.df_income_spend = df_income_spend 
+        self.df_social       = df_social 
         ######################################################################
         
 
@@ -195,11 +196,6 @@ class Universe():
                     maxmdt      = df_temp_2["MAXMDT"] ,
                     meanmdt     = df_temp_2["MEANMDT"],
                     stdmdt      = df_temp_2["STDMDT"],
-                    # Slope
-                    minpendi    = df_temp_2["MINPENDI"],
-                    maxpendi    = df_temp_2["MAXPENDI"],
-                    meanpendi   = df_temp_2["MEANPENDI"],
-                    stdpendi    = df_temp_2["STDPENDI"],
                     # Distance to 10k population centre
                     mindisn10m  = df_temp_2["MINDISN10M"],
                     maxdisn10m  = df_temp_2["MAXDISN10M"],
@@ -275,11 +271,6 @@ class Universe():
                     maxmdt      = df_temp_2["MAXMDT"] ,
                     meanmdt     = df_temp_2["MEANMDT"],
                     stdmdt      = df_temp_2["STDMDT"],
-                    # Slope,
-                    minpendi    = df_temp_2["MINPENDI"],
-                    maxpendi    = df_temp_2["MAXPENDI"],
-                    meanpendi   = df_temp_2["MEANPENDI"],
-                    stdpendi    = df_temp_2["STDPENDI"],
                     # Distance to 10k population centre
                     mindisn10m  = df_temp_2["MINDISN10M"],
                     maxdisn10m  = df_temp_2["MAXDISN10M"],
@@ -310,8 +301,11 @@ class Universe():
                     distcurgh   = df_temp_2["DISTCURGH"],
                     # Distance to primary healthcare centres
                     distatprim  = df_temp_2["DISTATPRIM"])
-                    #salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)],
+                    # Income
+                    #salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)]
+                    # Cost of living
                     #gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)])
+                    
 
             # Add specific population to the universe
             large_cities.append(the_population)
@@ -358,17 +352,18 @@ class Universe():
                                
                     # Crate agent
                     # Other values? distributions?
+
                     the_agent = Agents(
                             identifier        = agent_idx,
                             sex               = sex,
                             age               = random.randint(init, end),
                             population_centre = population,
-                            mdt               = population.meanmdt,
-                            pendi             = population.meanpendi,
-                            carretn           = population.meancarretn,
-                            aut               = population.meandisaut,
-                            ferr              = population.meandisferr,
-                            dis10m            = population.meandisn10m,
+                            population_others = self.population_centres,
+                            mdt               = np.random.triangular(population.minmdt, population.meanmdt, population.maxmdt),
+                            carretn           = np.random.triangular(population.mincarretn, population.meancarretn, population.maxcarretn),
+                            aut               = np.random.triangular(population.mindisaut, population.meandisaut, population.maxdisaut),
+                            ferr              = np.random.triangular(population.mindisferr, population.meandisferr, population.maxdisferr),
+                            dis10m            = np.random.triangular(population.mindisn10m, population.meandisn10m, population.maxdisn10m),
                             hospi             = population.disthospit,
                             farma             = population.distfarma,
                             ceduc             = population.distceduc,
@@ -820,8 +815,8 @@ class Universe():
                             sex = random.choice(["M", "F"]),
                             age = 0,
                             population_centre = population,
+                            population_others = self.population_centres,
                             mdt               = population.meanmdt,
-                            pendi             = population.meanpendi,
                             carretn           = population.meancarretn,
                             aut               = population.meandisaut,
                             ferr              = population.meandisferr,
@@ -985,6 +980,7 @@ class Universe():
             
             
             print(population.population_name)
+        
             ### INVOKE NATALITY AND MORTALITY MODELS ###
             df = pd.DataFrame.from_dict(population.ages_hist)        
             my_cols = [col for col in df.columns if str(self.year) in col]
@@ -1022,7 +1018,8 @@ class Universe():
             # Update historial for families
             population.update_families_hist()
             
-            
+            for agent in population.inhabitants:
+                agent.behavioural_attitude()
             
             
                
@@ -1128,6 +1125,7 @@ class Universe():
                           y = df.index.values.tolist(),
                           x = - df.iloc[:, 0],
                           name  = "Hombres",
+                          showlegend = False,
                           marker_color = "blue",
                           orientation = "h",))
             
@@ -1478,7 +1476,6 @@ class Universe():
 )
   
         
-        #fig.show()
         return fig
     
     
@@ -1586,11 +1583,38 @@ class Universe():
                         % (my_population.population_name, year),
                            bargap = 0.0,
                            bargroupgap = 0)
-        #fig.show()
         return fig
         
         
+
+    def plot_behavioural_attitude(self, population_code, year):
        
+        my_population = False
+        for population in self.population_centres:
+            if population.population_id == population_code:
+                my_population = population
+        
+        if my_population == False:
+            raise Exception("Population centre not found")
+            
+        df = pd.DataFrame.from_dict(my_population.ba_hist[year])
+        
+        fig = go.Figure()
+
+        for col in df.columns:
+            for population in self.population_centres:
+                if population.population_id == col:
+                    name = population.population_name
+            fig.add_trace(go.Box(y=df[col].values, name=name))
+            
+        fig.update_layout(title_text = "Actitud (BA) en %s hacia el resto de municipios" 
+                        % (my_population.population_name))
+  
+        return fig
+            
+        
+        
+        
         
     
     def regression_metrics(self):
