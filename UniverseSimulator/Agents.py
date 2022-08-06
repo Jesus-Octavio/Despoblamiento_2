@@ -33,7 +33,11 @@ class Agents():
                  ceduc,
                  curgh,
                  atprim,
-                 betas):
+                 salario,
+                 gasto,
+                 betas,
+                 gamma,
+                 alphas):
         
         
         # AGENTS/PEOPLE CONSTRUCTOR
@@ -66,18 +70,30 @@ class Agents():
         self.curgh    = curgh
         # Distance to primary healthcare centre
         self.atprim   = atprim
+        # Income
+        self.salario  = salario
+        # Life cost
+        self.gasto    = gasto
         
         
         # Following Vietnam THESIS
+        # THEORY OF PLANNED BEHAVIOUR -> BEHAVIOURAL ATTITUDE
         self.betas = betas
-        ba = [np.random.uniform(0, x) for x in self.betas]
-        ba = [x / sum(ba) for x in ba]
-
-        self.beta_0 = ba[0]
-        self.beta_1 = ba[1]
-        self.beta_2 = ba[2]
-        
         self.ba_hist = {}
+
+        
+        
+        
+        
+        # THEORY OF PLANNED BEHAVIOUR -> PERCEIVED BEHAVIOURAL CONTROL
+        self.gamma = gamma
+        self.pbc_hist = {}
+
+        # THEORY OF PLANNED BEHAVIOUR -> INTENTIONS
+        self.alphas = alphas
+        self.intention_hist = {}
+        
+        
         
         
         # Features about the place each person is living in
@@ -104,6 +120,12 @@ class Agents():
         """
         Theory of planned behaviour: behavioural attitude.
         """
+              
+        ba = [np.random.uniform(0, x) for x in self.betas]
+        ba = [x / sum(ba) for x in ba]
+        beta_0 = ba[0]
+        beta_1 = ba[1]
+        beta_2 = ba[2]
         
         year = self.population_centre.year
         if year in self.population_centre.ba_hist.keys():
@@ -119,12 +141,12 @@ class Agents():
         #    print("Other %s" % elem.population_name)
         #print("\n")
         #return None
-        factor_0 = self.beta_0 * self.mdt
+        factor_0 = beta_0 * self.mdt
     
-        factor_1 = self.beta_1 * np.mean([self.carretn, self.aut,
+        factor_1 = beta_1 * np.mean([self.carretn, self.aut,
                                           self.ferr, self.dis10m])
     
-        factor_2 = self.beta_2 * np.mean([self.hospi, self.farma, self.ceduc,
+        factor_2 = beta_2 * np.mean([self.hospi, self.farma, self.ceduc,
                                           self.curgh, self.atprim])
         
         ba_current = factor_0 + factor_1 + factor_2
@@ -139,12 +161,12 @@ class Agents():
         
         for elem in temp:
             
-            factor_0 = self.beta_0 * elem.meanmdt
+            factor_0 = beta_0 * elem.meanmdt
             
-            factor_1 = self.beta_1 * np.mean([elem.meancarretn, elem.meandisaut,
+            factor_1 = beta_1 * np.mean([elem.meancarretn, elem.meandisaut,
                                               elem.meandisferr, elem.meandisn10m])
     
-            factor_2 = self.beta_2 * np.mean([elem.disthospit, elem.distfarma, 
+            factor_2 = beta_2 * np.mean([elem.disthospit, elem.distfarma, 
                                               elem.distceduc, elem.distcurgh,
                                               elem.distatprim])
     
@@ -165,7 +187,45 @@ class Agents():
         """
         Theory of planned behaviour. perceived behavioural control.
         """
-        return None
+        gamma_0 = np.random.uniform(0, self.gamma)
+
+
+        year = self.population_centre.year
+        if year in self.population_centre.pbc_hist.keys():
+            pass
+        else:
+            self.population_centre.pbc_hist[year] = {}
+        
+        
+        #print("Currently living in %s" % self.population_centre.population_name)
+        temp = self.population_others.copy()
+        temp.remove(self.population_centre)
+        #for elem in temp:
+        #    print("Other %s" % elem.population_name)
+        #print("\n")
+        #return None
+        
+        pbc_current = self.salario - self.gasto * (1 + (gamma_0 * float(self.population_centre.distances[str(self.population_centre.population_id)])))
+        
+        self.pbc_hist[self.population_centre.population_id] = float(pbc_current)
+        
+        if not self.population_centre.population_id in self.population_centre.pbc_hist[year].keys():
+            self.population_centre.pbc_hist[year][self.population_centre.population_id] = [float(pbc_current)]
+        else:
+            self.population_centre.pbc_hist[year][self.population_centre.population_id].append(float(pbc_current))
+        
+        
+        for elem in temp:
+            pbc_current = self.salario - self.gasto * (1 + (gamma_0 * float(self.population_centre.distances[str(elem.population_id)])))
+            
+            self.pbc_hist[elem.population_id] = float(pbc_current)
+            
+            if not elem.population_id in self.population_centre.pbc_hist[year].keys():
+                self.population_centre.pbc_hist[year][elem.population_id] = [float(pbc_current)]
+            else:
+                self.population_centre.pbc_hist[year][elem.population_id].append(float(pbc_current))
+            
+            
     
     def subjective_norm(self):
         """
@@ -173,6 +233,22 @@ class Agents():
         
         """
         return None
+    
+    def intention(self):
+        """
+        Theory of planned behaviour: intention
+        """
+        print("Currently living in %s" % self.population_centre.population_id)
+        for key in self.ba_hist.keys():
+            temp = self.alphas[0] * self.ba_hist[key] + self.alphas[2] * self.pbc_hist[key]
+            self.intention_hist[key] = temp
+        self.intention_hist = dict(sorted(self.intention_hist.items(), key=lambda item: item[1]))
+        print(self.intention_hist)
+        print("\n")
+            
+        
+        
+        
 
     def migrate(self):
         # If a person want to migrate

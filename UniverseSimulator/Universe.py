@@ -84,6 +84,7 @@ class Universe():
                  df_features_large_cities,
                  df_income_spend_large_cities,
                  df_social,
+                 df_distances,
                  # TPB: Behavioural attitude
                  betas, #list/array of 11
                  # TPB: Subjective norm
@@ -122,6 +123,7 @@ class Universe():
         self.df_features     = df_features
         self.df_income_spend = df_income_spend 
         self.df_social       = df_social 
+        self.df_distances    = df_distances 
         ######################################################################
         
 
@@ -165,7 +167,8 @@ class Universe():
             df_temp_3    = self.df_income_spend.\
                                 query('CODMUN == ' + str(identifier))
             
-                    
+            df_distances = self.df_distances.loc[[identifier]]
+            
             #my_cols   = ["HOM" + self.year, "MUJ" + self.year,
             #             "NAT" + self.year, "MOR" + self.year, 
             #            "SALDOTT" + self.year]
@@ -229,8 +232,9 @@ class Universe():
                     natality    = 0,
                     mortality   = 0,
                     # Data about income and spenditures
-                    #salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)], 
-                    #gasto       = df_temp_3["GASTO_MEAN_"   + str(self.year)],
+                    salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)], 
+                    gasto       = df_temp_3["GASTO_MEAN_"   + str(self.year)],
+                    distances   = df_distances,
                     **d_args)
             
     
@@ -369,7 +373,11 @@ class Universe():
                             ceduc             = population.distceduc,
                             curgh             = population.distcurgh,
                             atprim            = population.distatprim,
-                            betas = self.betas
+                            salario           = population.salario,
+                            gasto             = population.gasto,
+                            betas             = self.betas,
+                            gamma             = self.gamma,
+                            alphas            = self.alphas,
                             )
                     
                     ############### TRYING TO BUILD UP FAMILES ###############
@@ -826,7 +834,11 @@ class Universe():
                             ceduc             = population.distceduc,
                             curgh             = population.distcurgh,
                             atprim            = population.distatprim,
-                            betas = self.betas
+                            salario           = population.salario,
+                            gasto             = population.gasto,
+                            betas             = self.betas,
+                            gamma             = self.gamma,
+                            alphas            = self.alphas,
                             )
                 
                 # Update family role
@@ -1020,7 +1032,8 @@ class Universe():
             
             for agent in population.inhabitants:
                 agent.behavioural_attitude()
-            
+                agent.perceived_beahavioural_control()
+                agent.intention()
             
                
                
@@ -1609,6 +1622,34 @@ class Universe():
             
         fig.update_layout(title_text = "Actitud (BA) en %s hacia el resto de municipios" 
                         % (my_population.population_name))
+        fig.update_layout(showlegend=False)
+  
+        return fig
+    
+    
+    def plot_perceived_behavioural_control(self, population_code, year):
+       
+        my_population = False
+        for population in self.population_centres:
+            if population.population_id == population_code:
+                my_population = population
+        
+        if my_population == False:
+            raise Exception("Population centre not found")
+            
+        df = pd.DataFrame.from_dict(my_population.pbc_hist[year])
+        
+        fig = go.Figure()
+
+        for col in df.columns:
+            for population in self.population_centres:
+                if population.population_id == col:
+                    name = population.population_name
+            fig.add_trace(go.Box(y=df[col].values, name=name))
+            
+        fig.update_layout(title_text = "Control del comportamieto percibido (PBC) en %s hacia el resto de municipios" 
+                        % (my_population.population_name))
+        fig.update_layout(showlegend=False)
   
         return fig
             

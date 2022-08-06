@@ -33,8 +33,9 @@ class PopulationCentre():
                  distceduc,
                  distcurgh,
                  distatprim,
-                 #salario,
-                 #gasto,
+                 salario,
+                 gasto,
+                 distances,
                  #hom, muj,):
                  natality, mortality, #prediccion
                  nat, mor, pob): #real
@@ -89,8 +90,9 @@ class PopulationCentre():
         self.distcurgh   = distcurgh
         self.distatprim  = distatprim
         
-        #self.salario     = salario
-        #self.gasto       = gasto
+        self.salario     = salario
+        self.gasto       = gasto
+        self.distances   = distances
                     
         # Mean happiness for inhabitants
         self.mean_happiness = self.update_mean_happiness()
@@ -131,7 +133,8 @@ class PopulationCentre():
         ######################################################################
         
         ##################### THEORY OF PLANNED BEHAVIOUR #####################
-        self.ba_hist = {}
+        self.ba_hist  = {}
+        self.pbc_hist = {}
         
         
         
