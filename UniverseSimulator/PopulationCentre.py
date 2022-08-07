@@ -135,6 +135,7 @@ class PopulationCentre():
         ##################### THEORY OF PLANNED BEHAVIOUR #####################
         self.ba_hist  = {}
         self.pbc_hist = {}
+        self.intention_hist = {}
         
         
         

@@ -64,7 +64,7 @@ class SeaofBTCapp(Pages, tk.Tk):
         
 
         for F in (StartPage, PageOne, PopulationCentrePage, PlotPage, YearsPage,
-                  YearsPageBA, YearsPagePBC):
+                  YearsPageBA, YearsPagePBC, YearsPageI):
 
             frame = F(container, self)
             self.frames[F] = frame
@@ -249,7 +249,27 @@ class YearsPagePBC(Pages, tk.Frame):
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PlotPage)).pack()
 
- 
+
+class YearsPageI(Pages, tk.Frame):
+    
+    def __init__(self, parent, controller):
+        
+        def plotter(year):
+            fig = controller.universe.plot_intention(int(Pages._id), year)    
+            py.plot(fig, filename = "tpb_i.html", auto_open = True)
+        
+        tk.Frame.__init__(self, parent)
+        
+        years = list(controller.universe.population_centres[0].year_hist[1:])
+        
+        for year in years:
+            tk.Button(self,
+                  text = "AÑO %s" % year, 
+                  command = lambda year = year: plotter(int(year))).pack()
+                  
+        tk.Button(self,
+                  text = "ATRÁS",
+                  command = lambda: controller.show_frame(PlotPage)).pack()
 class PlotPage(Pages, tk.Frame,):
     
     def __init__(self, parent, controller):
@@ -287,6 +307,11 @@ class PlotPage(Pages, tk.Frame,):
         def button_8_plot():
             fig = controller.universe.plot_perceived_behavioural_control(int(Pages._id))    
             py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
+            
+            
+        def button_9_plot():
+            fig = controller.universe.plot_intention(int(Pages._id))    
+            py.plot(fig, filename = "tpbi.html", auto_open = True)
             
         ## All of these files mut de removed
         
@@ -335,6 +360,10 @@ class PlotPage(Pages, tk.Frame,):
         tk.Button(self,
                   text = "TPB - Perceived Behavioural Control (PBC)",
                   command = lambda: controller.show_frame(YearsPagePBC)).pack()
+        
+        tk.Button(self,
+                  text = "TPB - Intention (I)",
+                  command = lambda: controller.show_frame(YearsPageI)).pack()
         
         tk.Button(self,
                   text = "ATRÁS",

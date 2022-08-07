@@ -234,20 +234,29 @@ class Agents():
         """
         return None
     
+    
     def intention(self):
         """
         Theory of planned behaviour: intention
         """
-        print("Currently living in %s" % self.population_centre.population_id)
+        year = self.population_centre.year
+        if year in self.population_centre.intention_hist.keys():
+            pass
+        else:
+            self.population_centre.intention_hist[year] = {}
+        
         for key in self.ba_hist.keys():
             temp = self.alphas[0] * self.ba_hist[key] + self.alphas[2] * self.pbc_hist[key]
             self.intention_hist[key] = temp
-        self.intention_hist = dict(sorted(self.intention_hist.items(), key=lambda item: item[1]))
-        print(self.intention_hist)
-        print("\n")
             
+            if not key in self.population_centre.intention_hist[year].keys():
+                self.population_centre.intention_hist[year][key] = [float(temp)]
+            else:
+                self.population_centre.intention_hist[year][key].append(float(temp))
         
-        
+        self.intention_hist = dict(sorted(self.intention_hist.items(), key=lambda item: item[1]))
+     
+                    
         
 
     def migrate(self):

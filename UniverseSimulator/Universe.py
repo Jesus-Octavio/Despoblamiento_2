@@ -1652,6 +1652,33 @@ class Universe():
         fig.update_layout(showlegend=False)
   
         return fig
+    
+    
+    def plot_intention(self, population_code, year):
+       
+        my_population = False
+        for population in self.population_centres:
+            if population.population_id == population_code:
+                my_population = population
+        
+        if my_population == False:
+            raise Exception("Population centre not found")
+            
+        df = pd.DataFrame.from_dict(my_population.intention_hist[year])
+        
+        fig = go.Figure()
+
+        for col in df.columns:
+            for population in self.population_centres:
+                if population.population_id == col:
+                    name = population.population_name
+            fig.add_trace(go.Box(y=df[col].values, name=name))
+            
+        fig.update_layout(title_text = "Intanción (I) en %s hacia el resto de municipios" 
+                        % (my_population.population_name))
+        fig.update_layout(showlegend=False)
+  
+        return fig
             
         
         
