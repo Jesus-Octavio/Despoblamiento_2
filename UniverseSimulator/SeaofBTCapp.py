@@ -6,11 +6,6 @@ Created on Thu Mar 31 09:37:41 2022
 @author: jesus
 """
 
-from joblib import dump, load
-import keras
-import tensorflow as tf
- 
-
 import tkinter as tk
 from tkinter import messagebox
 import sys
@@ -255,8 +250,9 @@ class YearsPageI(Pages, tk.Frame):
     def __init__(self, parent, controller):
         
         def plotter(year):
+            path = "Graficos/Intention/"
             fig = controller.universe.plot_intention(int(Pages._id), year)    
-            py.plot(fig, filename = "tpb_i.html", auto_open = True)
+            py.plot(fig, filename = path + "tpb_intention_" + str(Pages.name) + ".html", auto_open = True)
         
         tk.Frame.__init__(self, parent)
         

@@ -31,7 +31,8 @@ if __name__ == "__main__":
     Y = np.array([17, 31, 45, 59, 63])
     mod = MyLikelihood(endog = Y, exog = X)
     res = mod.fit()
-    print('Parameters: alpha = %f; beta = %f; gamma = %f ' % (res.params[0], res.params[1], res.params[2]))
+    print('Parameters: alpha = %f; beta = %f; gamma = %f ' 
+          % (res.params[0], res.params[1], res.params[2]))
     print('Standard errors: ', res.bse)
     print('P-values: ', res.pvalues)
     print('AIC: %f ' % res.aic)

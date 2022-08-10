@@ -52,17 +52,20 @@ if __name__ == "__main__":
     year             = 2010
     
     # COMARCA 2
-    path             = "Dominio/Comarca_2/"
-    df_historic_ages = pd.read_csv(path + "df_2_historic_ages.csv")
-    df_families      = pd.read_csv(path + "df_2_families.csv")
-    df_features      = pd.read_csv(path + "df_2_infra_coords.csv")
-    df_income_spend  = pd.read_csv(path + "df_2_income_spend_normal.csv") 
-    df_income_spend  = pd.read_csv(path + "df_2_income_spend_normal.csv") 
-    df_distances     = pd.read_csv(path + "df_distances_2_large_cities.csv", index_col = 0).fillna(0)
+    path             = "Dominio/Comarca_2_atractor/Comarca_2_aislado/"
+    df_historic_ages = pd.read_csv(path + "df_2_atractor_aislado_historic_ages.csv")
+    df_families      = pd.read_csv(path + "df_2_atractor_aislado_families.csv")
+    df_features      = pd.read_csv(path + "df_2_atractor_aislado_infra_coords_normal.csv")
+    df_income_spend  = pd.read_csv(path + "df_2_atractor_aislado_income_spend_normal.csv") 
+    
+    # DISTANCES
+    path             = "Dominio/Comarca_2_atractor/"
+    df_distances     = pd.read_csv(path + "df_2_atractor_distances.csv", index_col = 0).fillna(0)
     
     # Large Cities
-    df_features_large_cities     = pd.read_csv(path + "df_large_cities_infra_coords_normal.csv")
-    df_income_spend_large_cities = pd.read_csv(path + "df_large_cities_income_spend_normal.csv")
+    path             = "Dominio/Comarca_2_atractor/Atractor_aislado/"
+    df_features_large_cities     = pd.read_csv(path + "df_2_atractor_aislado_infra_coords_normal.csv")
+    df_income_spend_large_cities = pd.read_csv(path + "df_2_atractor_aislado_income_spend_normal.csv")
     
     # Subjective norm (social)
     path             = "Dominio/Social_Norm/"
@@ -87,9 +90,9 @@ if __name__ == "__main__":
                            df_features                  = df_features,
                            df_income_spend              = df_income_spend,
                            df_features_large_cities     = df_features_large_cities,
+                           df_income_spend_large_cities = df_income_spend_large_cities,
                            df_social                    = df_social,
                            df_distances                 = df_distances,
-                           df_income_spend_large_cities = df_income_spend_large_cities,
                            betas  = list(np.random.uniform(0, 1, 3)),
                            gamma  = np.random.uniform(0, 1),
                            theta  = np.random.uniform(0, 1),

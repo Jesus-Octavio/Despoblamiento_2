@@ -23,11 +23,11 @@ class PopulationCentre():
     def __init__(self, year, identifier, name,
                  num_men, num_women,
                  longitud, latitud,
-                 minmdt, maxmdt, meanmdt, stdmdt,
-                 mindisn10m, maxdisn10m, meandisn10m, stddisn10m,
-                 mincarretn, maxcarretn, meancarretn, stdcarretn,
-                 mindisaut, maxdisaut, meandisaut, stddisaut,
-                 mindisferr, maxdisferr, meandisferr, stddisferr,
+                 minmdt, maxmdt, meanmdt,
+                 mindisn10m, maxdisn10m, meandisn10m, 
+                 mincarretn, maxcarretn, meancarretn, 
+                 mindisaut, maxdisaut, meandisaut, 
+                 mindisferr, maxdisferr, meandisferr, 
                  disthospit, 
                  distfarma,
                  distceduc,
@@ -67,23 +67,18 @@ class PopulationCentre():
         self.minmdt      = minmdt
         self.maxmdt      = maxmdt
         self.meanmdt     = meanmdt
-        self.stdmdt      = stdmdt
         self.mindisn10m  = mindisn10m
         self.maxdisn10m  = maxdisn10m
         self.meandisn10m = meandisn10m
-        self.stddisn10m  = stddisn10m
         self.mincarretn  = mincarretn
         self.maxcarretn  = maxcarretn
         self.meancarretn = meancarretn
-        self.stdcarretn  = stdcarretn
         self.mindisaut   = mindisaut
         self.maxdisaut   = maxdisaut
         self.meandisaut  = meandisaut
-        self.stddisaut   = stddisaut
         self.mindisferr  = mindisferr
         self.maxdisferr  = maxdisferr
         self.meandisferr = meandisferr
-        self.stddisferr  = stddisferr
         self.disthospit  = disthospit 
         self.distfarma   = distfarma
         self.distceduc   = distceduc

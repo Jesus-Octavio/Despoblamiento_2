@@ -82,9 +82,6 @@ class Agents():
         self.ba_hist = {}
 
         
-        
-        
-        
         # THEORY OF PLANNED BEHAVIOUR -> PERCEIVED BEHAVIOURAL CONTROL
         self.gamma = gamma
         self.pbc_hist = {}
@@ -224,6 +221,8 @@ class Agents():
                 self.population_centre.pbc_hist[year][elem.population_id] = [float(pbc_current)]
             else:
                 self.population_centre.pbc_hist[year][elem.population_id].append(float(pbc_current))
+                
+        
             
             
     

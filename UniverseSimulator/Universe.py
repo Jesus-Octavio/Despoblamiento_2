@@ -131,6 +131,13 @@ class Universe():
         population_centres = self.PopulationCentreBuilder()
         self.population_centres  = population_centres[0]
         self.cols_update = population_centres[1]
+        
+        # LARGE CITIES
+        self.df_features_large_cities = df_features_large_cities
+        self.df_income_spend_large_cities = df_income_spend_large_cities
+        self.large_cities = self.LargeCityBuilder()
+        
+        
         # List of persons in the universe
         self.universe_persons = self.AgentsBuilder()
         
@@ -141,10 +148,7 @@ class Universe():
         ######################################################################
         
         
-        # LARGE CITIES
-        self.df_features_large_cities = df_features_large_cities
-        self.df_income_spend_large_cities = df_income_spend_large_cities
-        self.large_cities = self.LargeCityBuilder()
+
         
         
 
@@ -198,27 +202,22 @@ class Universe():
                     minmdt      = df_temp_2["MINMDT"],
                     maxmdt      = df_temp_2["MAXMDT"] ,
                     meanmdt     = df_temp_2["MEANMDT"],
-                    stdmdt      = df_temp_2["STDMDT"],
                     # Distance to 10k population centre
                     mindisn10m  = df_temp_2["MINDISN10M"],
                     maxdisn10m  = df_temp_2["MAXDISN10M"],
                     meandisn10m = df_temp_2["MEANDISN10M"],
-                    stddisn10m  = df_temp_2["STDDISN10M"],
                     # Distance to road
                     mincarretn  = df_temp_2["MINCARRETN"],
                     maxcarretn  = df_temp_2["MAXCARRETN"],
                     meancarretn = df_temp_2["MEANCARRETN"],
-                    stdcarretn  = df_temp_2["STDCARRETN"],
                     # Distance to highway
                     mindisaut   = df_temp_2["MINDISAUT"],
                     maxdisaut   = df_temp_2["MAXDISAUT"],
                     meandisaut  = df_temp_2["MEANDISAUT"],
-                    stddisaut   = df_temp_2["STDDISAUT"],
                     # Distance to railroad
                     mindisferr  = df_temp_2["MINDISFERR"],
                     maxdisferr  = df_temp_2["MAXDISFERR"],
                     meandisferr = df_temp_2["MEANDISFERR"],
-                    stddisferr  = df_temp_2["STDDISFERR"],
                     # Distance to hospitals
                     disthospit  = df_temp_2["DISTHOSPIT"],
                     # Distance to pharmacies
@@ -274,27 +273,22 @@ class Universe():
                     minmdt      = df_temp_2["MINMDT"],
                     maxmdt      = df_temp_2["MAXMDT"] ,
                     meanmdt     = df_temp_2["MEANMDT"],
-                    stdmdt      = df_temp_2["STDMDT"],
                     # Distance to 10k population centre
                     mindisn10m  = df_temp_2["MINDISN10M"],
                     maxdisn10m  = df_temp_2["MAXDISN10M"],
                     meandisn10m = df_temp_2["MEANDISN10M"],
-                    stddisn10m  = df_temp_2["STDDISN10M"],
                     # Distance to road
                     mincarretn  = df_temp_2["MINCARRETN"],
                     maxcarretn  = df_temp_2["MAXCARRETN"],
                     meancarretn = df_temp_2["MEANCARRETN"],
-                    stdcarretn  = df_temp_2["STDCARRETN"],
                     # Distance to highway,
                     mindisaut   = df_temp_2["MINDISAUT"],
                     maxdisaut   = df_temp_2["MAXDISAUT"],
                     meandisaut  = df_temp_2["MEANDISAUT"],
-                    stddisaut   = df_temp_2["STDDISAUT"] ,
                     # Distance to railroad
                     mindisferr  = df_temp_2["MINDISFERR"] ,
                     maxdisferr  = df_temp_2["MAXDISFERR"] ,
                     meandisferr = df_temp_2["MEANDISFERR"],
-                    stddisferr  = df_temp_2["STDDISFERR"],
                     # Distance to hospitals
                     disthospit  = df_temp_2["DISTHOSPIT"],
                     # Distance to pharmacies
@@ -304,11 +298,11 @@ class Universe():
                     # Distance to emercengy centres
                     distcurgh   = df_temp_2["DISTCURGH"],
                     # Distance to primary healthcare centres
-                    distatprim  = df_temp_2["DISTATPRIM"])
+                    distatprim  = df_temp_2["DISTATPRIM"],
                     # Income
-                    #salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)]
+                    salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)],
                     # Cost of living
-                    #gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)])
+                    gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)])
                     
 
             # Add specific population to the universe
@@ -362,12 +356,12 @@ class Universe():
                             sex               = sex,
                             age               = random.randint(init, end),
                             population_centre = population,
-                            population_others = self.population_centres,
-                            mdt               = np.random.triangular(population.minmdt, population.meanmdt, population.maxmdt),
-                            carretn           = np.random.triangular(population.mincarretn, population.meancarretn, population.maxcarretn),
-                            aut               = np.random.triangular(population.mindisaut, population.meandisaut, population.maxdisaut),
-                            ferr              = np.random.triangular(population.mindisferr, population.meandisferr, population.maxdisferr),
-                            dis10m            = np.random.triangular(population.mindisn10m, population.meandisn10m, population.maxdisn10m),
+                            population_others = [*self.population_centres, *list(self.large_cities)],
+                            mdt               = np.random.triangular(right = population.minmdt,     mode = population.meanmdt,      left = population.maxmdt),
+                            carretn           = np.random.triangular(right = population.mincarretn, mode =  population.meancarretn, left = population.maxcarretn),
+                            aut               = np.random.triangular(right =population.mindisaut,   mode = population.meandisaut,   left = population.maxdisaut),
+                            ferr              = np.random.triangular(right =population.mindisferr,  mode = population.meandisferr,  left = population.maxdisferr),
+                            dis10m            = np.random.triangular(right =population.mindisn10m,  mode = population.meandisn10m,  left =population.maxdisn10m),
                             hospi             = population.disthospit,
                             farma             = population.distfarma,
                             ceduc             = population.distceduc,
@@ -657,20 +651,6 @@ class Universe():
                 deaths += 1
             
             
-            """
-            # and some random people
-            while deaths <= population.mortality:
-                person_to_die = random.choice(population.inhabitants)
-                #print(str(person_to_die.person_id) + " - " + person_to_die.sex + " - " + str(person_to_die.age) + " - " + str(myround(person_to_die.age)))
-                # Update dictionary with ages by range:
-                interval = myround(person_to_die.age)
-                population.ages_hist[self.year + person_to_die.sex][interval] -= 1
-                # Remove person
-                person_to_die.remove_agent()
-                self.remove_person_from_universe(person_to_die)
-                deaths += 1
-            """
-                
                 
             #print("\n")    
             #print("ESTADO TRAS MUERTES")
@@ -823,7 +803,7 @@ class Universe():
                             sex = random.choice(["M", "F"]),
                             age = 0,
                             population_centre = population,
-                            population_others = self.population_centres,
+                            population_others = [*self.population_centres, *list(self.large_cities)],
                             mdt               = population.meanmdt,
                             carretn           = population.meancarretn,
                             aut               = population.meandisaut,
@@ -1035,7 +1015,8 @@ class Universe():
                 agent.perceived_beahavioural_control()
                 agent.intention()
             
-               
+        
+        return 2
                
     def remove_person_from_universe(self, agent):
         # METHOD TO REMOVE PEOPLE FROM UNIVERSE (those who die mainly)
@@ -1603,7 +1584,7 @@ class Universe():
     def plot_behavioural_attitude(self, population_code, year):
        
         my_population = False
-        for population in self.population_centres:
+        for population in [*self.population_centres, *list(self.large_cities)]:
             if population.population_id == population_code:
                 my_population = population
         
@@ -1615,13 +1596,13 @@ class Universe():
         fig = go.Figure()
 
         for col in df.columns:
-            for population in self.population_centres:
+            for population in [*self.population_centres, *list(self.large_cities)]:
                 if population.population_id == col:
                     name = population.population_name
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
-        fig.update_layout(title_text = "Actitud (BA) en %s hacia el resto de municipios" 
-                        % (my_population.population_name))
+        fig.update_layout(title_text = "Actitud (BA) en %s hacia el resto de municipios en el año %s" 
+                        % (my_population.population_name, str(year)))
         fig.update_layout(showlegend=False)
   
         return fig
@@ -1630,7 +1611,7 @@ class Universe():
     def plot_perceived_behavioural_control(self, population_code, year):
        
         my_population = False
-        for population in self.population_centres:
+        for population in [*self.population_centres, *list(self.large_cities)]:
             if population.population_id == population_code:
                 my_population = population
         
@@ -1642,13 +1623,13 @@ class Universe():
         fig = go.Figure()
 
         for col in df.columns:
-            for population in self.population_centres:
+            for population in [*self.population_centres, *list(self.large_cities)]:
                 if population.population_id == col:
                     name = population.population_name
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
-        fig.update_layout(title_text = "Control del comportamieto percibido (PBC) en %s hacia el resto de municipios" 
-                        % (my_population.population_name))
+        fig.update_layout(title_text = "Control del comportamieto percibido (PBC) en %s hacia el resto de municipios en el año %s" 
+                        % (my_population.population_name, str(year)))
         fig.update_layout(showlegend=False)
   
         return fig
@@ -1661,21 +1642,23 @@ class Universe():
             if population.population_id == population_code:
                 my_population = population
         
+        
         if my_population == False:
             raise Exception("Population centre not found")
             
+    
         df = pd.DataFrame.from_dict(my_population.intention_hist[year])
         
         fig = go.Figure()
 
         for col in df.columns:
-            for population in self.population_centres:
+            for population in [*self.population_centres, *list(self.large_cities)]:
                 if population.population_id == col:
                     name = population.population_name
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
-        fig.update_layout(title_text = "Intanción (I) en %s hacia el resto de municipios" 
-                        % (my_population.population_name))
+        fig.update_layout(title_text = "Intención (I) en %s hacia el resto de municipios en el año %s" 
+                        % (my_population.population_name, str(year)))
         fig.update_layout(showlegend=False)
   
         return fig
