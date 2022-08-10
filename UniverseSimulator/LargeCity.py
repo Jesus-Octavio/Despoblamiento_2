@@ -23,7 +23,8 @@ class LargeCity():
                  distcurgh,
                  distatprim,
                  salario,
-                 gasto,):
+                 gasto,
+                 social,):
         
         self.population_id = identifier
         self.population_name = name
@@ -53,6 +54,8 @@ class LargeCity():
         self.distatprim  = distatprim
         self.salario     = salario
         self.gasto       = gasto
+        
+        self.social = social
         
         self.inhabitants = []
 

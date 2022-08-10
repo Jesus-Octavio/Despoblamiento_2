@@ -37,6 +37,7 @@ class Agents():
                  gasto,
                  betas,
                  gamma,
+                 theta,
                  alphas):
         
         
@@ -81,6 +82,9 @@ class Agents():
         self.betas = betas
         self.ba_hist = {}
 
+        # THEORY OF PLANNED BEHAVIOUR -> PERCEIVED BEHAVIOURAL CONTROL
+        self.theta = theta
+        self.sn_hist = {}
         
         # THEORY OF PLANNED BEHAVIOUR -> PERCEIVED BEHAVIOURAL CONTROL
         self.gamma = gamma
@@ -178,6 +182,48 @@ class Agents():
             
 
             
+     
+    def subjective_norm(self):
+        """
+        Theory of planned behaviour: subjective norm.
+        
+        """
+        
+        theta_0 = np.random.uniform(0, self.theta)
+        
+        year = self.population_centre.year
+        if year in self.population_centre.sn_hist.keys():
+            pass
+        else:
+            self.population_centre.sn_hist[year] = {}
+            
+        #my_in  = "IN_" + str(self.age) + "_" + str(self.sex)
+        
+        my_out_column = "OUT_" + str(self.age) + "_" + str(self.sex)
+        my_in_column  = "IN_" + str(self.age) + "_" + str(self.sex)
+        
+        if my_out_column in list(self.population_centre.social.columns):
+            my_out = float(self.population_centre.social[my_out_column])
+        else:
+            my_out = 0                        
+                       
+        for destination in self.population_others:
+            if my_in_column in list(destination.social.columns):
+                my_in =  float(destination.social[my_in_column])
+            else:
+                my_in = 0
+             
+            my_res =  theta_0 * (my_out - my_in)
+            self.sn_hist[destination.population_id]   = my_res
+                
+            if not destination.population_id in self.population_centre.sn_hist[year].keys():
+                self.population_centre.sn_hist[year][destination.population_id] = [float(my_res)]
+            else:
+                self.population_centre.sn_hist[year][destination.population_id].append(float(my_res))
+            
+         
+        
+        
         
     
     def perceived_beahavioural_control(self):
@@ -224,14 +270,9 @@ class Agents():
                 
         
             
-            
-    
-    def subjective_norm(self):
-        """
-        Theory of planned behaviour: subjective norm.
-        
-        """
-        return None
+
+      
+   
     
     
     def intention(self):
@@ -245,7 +286,7 @@ class Agents():
             self.population_centre.intention_hist[year] = {}
         
         for key in self.ba_hist.keys():
-            temp = self.alphas[0] * self.ba_hist[key] + self.alphas[2] * self.pbc_hist[key]
+            temp = (self.alphas[0] * self.ba_hist[key]) + (self.alphas[1] * self.sn_hist[key]) + (self.alphas[2] * self.pbc_hist[key])
             self.intention_hist[key] = temp
             
             if not key in self.population_centre.intention_hist[year].keys():

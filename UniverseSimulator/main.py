@@ -68,8 +68,8 @@ if __name__ == "__main__":
     df_income_spend_large_cities = pd.read_csv(path + "df_2_atractor_aislado_income_spend_normal.csv")
     
     # Subjective norm (social)
-    path             = "Dominio/Social_Norm/"
-    df_social = pd.read_csv(path + "df_social.csv")
+    path             = "Dominio/Subjective_Norm/"
+    df_social = pd.read_csv(path + "df_subjective_norm_temp.csv").fillna(0)
     
     # Natality and mortality models
     path = "Modelos/"
@@ -94,7 +94,7 @@ if __name__ == "__main__":
                            df_social                    = df_social,
                            df_distances                 = df_distances,
                            betas  = list(np.random.uniform(0, 1, 3)),
-                           gamma  = np.random.uniform(0, 1),
+                           gamma  = np.random.uniform(0, 1), 
                            theta  = np.random.uniform(0, 1),
                            alphas = list(np.random.uniform(0, 1, 3)),
                            natality_model  = natality_model,

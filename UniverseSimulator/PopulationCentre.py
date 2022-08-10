@@ -36,6 +36,7 @@ class PopulationCentre():
                  salario,
                  gasto,
                  distances,
+                 social,
                  #hom, muj,):
                  natality, mortality, #prediccion
                  nat, mor, pob): #real
@@ -129,6 +130,8 @@ class PopulationCentre():
         
         ##################### THEORY OF PLANNED BEHAVIOUR #####################
         self.ba_hist  = {}
+        self.social = social
+        self.sn_hist = {}
         self.pbc_hist = {}
         self.intention_hist = {}
         

@@ -87,9 +87,9 @@ class Universe():
                  df_distances,
                  # TPB: Behavioural attitude
                  betas, #list/array of 11
-                 # TPB: Subjective norm
-                 gamma, #float
                  # TPB: Perceived behavioural control
+                 gamma, #float
+                 # TPB: Subjective norm
                  theta, #float
                  # TPB: Intention
                  alphas, #list/array of 3
@@ -173,6 +173,11 @@ class Universe():
             
             df_distances = self.df_distances.loc[[identifier]]
             
+            if identifier in list(self.df_social["CODE"]):
+                df_social = self.df_social.loc[self.df_social["CODE"] == identifier]
+            else:
+                df_social = self.df_social.loc[self.df_social["CODE"] == 39]
+            
             #my_cols   = ["HOM" + self.year, "MUJ" + self.year,
             #             "NAT" + self.year, "MOR" + self.year, 
             #            "SALDOTT" + self.year]
@@ -228,6 +233,8 @@ class Universe():
                     distcurgh   = df_temp_2["DISTCURGH"],
                     # Distance to primary healthcare centres
                     distatprim  = df_temp_2["DISTATPRIM"],
+                    # Subjective / social norm
+                    social      = df_social, 
                     natality    = 0,
                     mortality   = 0,
                     # Data about income and spenditures
@@ -258,7 +265,11 @@ class Universe():
             df_temp_3  = self.df_income_spend_large_cities.\
                                 query('CODMUN == ' + str(identifier))
             
-
+            
+            if identifier in list(self.df_social["CODE"]):
+                df_social = self.df_social.loc[self.df_social["CODE"] == identifier]
+            else:
+                df_social = self.df_social.loc[self.df_social["CODE"] == 39]
             
         
             # Invoke Population Center constructor
@@ -302,7 +313,8 @@ class Universe():
                     # Income
                     salario     = df_temp_3["SALARIO_MEAN_" + str(self.year)],
                     # Cost of living
-                    gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)])
+                    gasto       = df_temp_3["GASTO_MEAN_" + str(self.year)],
+                    social      = df_social,)
                     
 
             # Add specific population to the universe
@@ -372,6 +384,7 @@ class Universe():
                             betas             = self.betas,
                             gamma             = self.gamma,
                             alphas            = self.alphas,
+                            theta             = self.theta,
                             )
                     
                     ############### TRYING TO BUILD UP FAMILES ###############
@@ -819,6 +832,7 @@ class Universe():
                             betas             = self.betas,
                             gamma             = self.gamma,
                             alphas            = self.alphas,
+                            theta             = self.theta,
                             )
                 
                 # Update family role
@@ -1013,6 +1027,7 @@ class Universe():
             for agent in population.inhabitants:
                 agent.behavioural_attitude()
                 agent.perceived_beahavioural_control()
+                agent.subjective_norm()
                 agent.intention()
             
         
@@ -1629,6 +1644,36 @@ class Universe():
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
         fig.update_layout(title_text = "Control del comportamieto percibido (PBC) en %s hacia el resto de municipios en el año %s" 
+                        % (my_population.population_name, str(year)))
+        fig.update_layout(showlegend=False)
+  
+        return fig
+    
+    
+    
+    def plot_subjective_norm(self, population_code, year):
+       
+        my_population = False
+        for population in [*self.population_centres, *list(self.large_cities)]:
+            if population.population_id == population_code:
+                my_population = population
+        
+        if my_population == False:
+            raise Exception("Population centre not found")
+            
+        df = pd.DataFrame.from_dict(my_population.sn_hist[year])
+        for key in my_population.sn_hist.keys():
+            print("Key %s -> %s" % (str(key), str(len(my_population.sn_hist[key]))))
+        
+        fig = go.Figure()
+
+        for col in df.columns:
+            for population in [*self.population_centres, *list(self.large_cities)]:
+                if population.population_id == col:
+                    name = population.population_name
+            fig.add_trace(go.Box(y=df[col].values, name=name))
+            
+        fig.update_layout(title_text = "Norma Subjetiva (SN) en %s hacia el resto de municipios en el año %s" 
                         % (my_population.population_name, str(year)))
         fig.update_layout(showlegend=False)
   

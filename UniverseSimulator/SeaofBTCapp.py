@@ -59,7 +59,7 @@ class SeaofBTCapp(Pages, tk.Tk):
         
 
         for F in (StartPage, PageOne, PopulationCentrePage, PlotPage, YearsPage,
-                  YearsPageBA, YearsPagePBC, YearsPageI):
+                  YearsPageBA, YearsPageSN, YearsPagePBC, YearsPageI):
 
             frame = F(container, self)
             self.frames[F] = frame
@@ -221,6 +221,28 @@ class YearsPageBA(Pages, tk.Frame):
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PlotPage)).pack()
         
+
+
+class YearsPageSN(Pages, tk.Frame):
+    
+    def __init__(self, parent, controller):
+        
+        def plotter(year):
+            fig = controller.universe.plot_subjective_norm(int(Pages._id), year)    
+            py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
+        
+        tk.Frame.__init__(self, parent)
+        
+        years = list(controller.universe.population_centres[0].year_hist[1:])
+        
+        for year in years:
+            tk.Button(self,
+                  text = "AÑO %s" % year, 
+                  command = lambda year = year: plotter(int(year))).pack()
+                  
+        tk.Button(self,
+                  text = "ATRÁS",
+                  command = lambda: controller.show_frame(PlotPage)).pack()
         
         
 class YearsPagePBC(Pages, tk.Frame):
@@ -243,6 +265,7 @@ class YearsPagePBC(Pages, tk.Frame):
         tk.Button(self,
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PlotPage)).pack()
+
 
 
 class YearsPageI(Pages, tk.Frame):
@@ -301,11 +324,14 @@ class PlotPage(Pages, tk.Frame,):
             py.plot(fig, filename = "tpb_ba.html", auto_open = True)
             
         def button_8_plot():
+            fig = controller.universe.plot_subjective_norm(int(Pages._id))    
+            py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
+            
+        def button_9_plot():
             fig = controller.universe.plot_perceived_behavioural_control(int(Pages._id))    
             py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
             
-            
-        def button_9_plot():
+        def button_10_plot():
             fig = controller.universe.plot_intention(int(Pages._id))    
             py.plot(fig, filename = "tpbi.html", auto_open = True)
             
@@ -350,8 +376,11 @@ class PlotPage(Pages, tk.Frame,):
         
         tk.Button(self,
                   text = "TPB - Behavioural Attitude (BA)",
-                  command = lambda: controller.show_frame(YearsPageBA)).pack()
+                  command = lambda: controller.show_frame(YearsPageBA)).pack()       
         
+        tk.Button(self,
+                  text = "TPB - Social Norm (SN)",
+                  command = lambda: controller.show_frame(YearsPageSN)).pack() 
         
         tk.Button(self,
                   text = "TPB - Perceived Behavioural Control (PBC)",
