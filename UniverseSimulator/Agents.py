@@ -180,7 +180,10 @@ class Agents():
             else:
                 self.population_centre.ba_hist[year][elem.population_id].append(float(ba_current))
             
-
+        values = self.ba_hist.values()
+        min_ = min(values)
+        max_ = max(values)
+        self.ba_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.ba_hist.items() } 
             
      
     def subjective_norm(self):
@@ -221,7 +224,10 @@ class Agents():
             else:
                 self.population_centre.sn_hist[year][destination.population_id].append(float(my_res))
             
-         
+        values = self.sn_hist.values()
+        min_ = min(values)
+        max_ = max(values)
+        self.sn_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.sn_hist.items() } 
         
         
         
@@ -269,7 +275,11 @@ class Agents():
                 self.population_centre.pbc_hist[year][elem.population_id].append(float(pbc_current))
                 
         
-            
+        values = self.pbc_hist.values()
+        min_ = min(values)
+        max_ = max(values)
+        self.pbc_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.pbc_hist.items() }
+   
 
       
    
@@ -295,6 +305,17 @@ class Agents():
                 self.population_centre.intention_hist[year][key].append(float(temp))
         
         self.intention_hist = dict(sorted(self.intention_hist.items(), key=lambda item: item[1]))
+        
+        
+        
+        #values = self.intention_hist.values()
+        #min_ = min(values)
+        #max_ = max(values)
+        #self.intention_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.intention_hist.items() }
+
+
+        
+        
      
                     
         

@@ -102,7 +102,7 @@ class StartPage(tk.Frame):
         
         tk.Button(self,
                   text = "ENTER",
-                  command = lambda: controller.show_frame(IterationPage)).pack()
+                  command = lambda: controller.show_frame(PageOne)).pack()
 
 
 
@@ -115,7 +115,7 @@ class IterationPage(tk.Frame):
         def iterate_universe(n_iter):
             #  tkinter updates things when your program is idle. !!!!
             label = tk.Label(self,
-                     text = "....ESTAMOS TRABAJANDO EN ELLO... \n AÑO %s ALCANZADO \n CONTINÚE" % str(2010 + n_iter),
+                     text = "...ITERANDO... \n AÑO %s ALCANZADO \n CONTINÚE" % str(2010 + n_iter),
                      font = ("Times", 14))
             label.place(anchor="center", relx=0.5, rely=0.5)
             
@@ -347,6 +347,9 @@ class YearsPageI(Pages, tk.Frame):
         tk.Button(self,
                   text = "ATRÁS",
                   command = lambda: controller.show_frame(PlotPage)).pack()
+        
+        
+        
 class PlotPage(Pages, tk.Frame,):
     
     def __init__(self, parent, controller):

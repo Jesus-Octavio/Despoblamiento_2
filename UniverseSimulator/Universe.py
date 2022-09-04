@@ -369,11 +369,11 @@ class Universe():
                             age               = random.randint(init, end),
                             population_centre = population,
                             population_others = [*self.population_centres, *list(self.large_cities)],
-                            mdt               = np.random.triangular(left = population.minmdt,     mode = population.meanmdt,      right = population.maxmdt),
-                            carretn           = np.random.triangular(left = population.mincarretn, mode =  population.meancarretn, right = population.maxcarretn),
-                            aut               = np.random.triangular(left = population.mindisaut,  mode = population.meandisaut,   right = population.maxdisaut),
-                            ferr              = np.random.triangular(left = population.mindisferr, mode = population.meandisferr,  right = population.maxdisferr),
-                            dis10m            = np.random.triangular(left = population.mindisn10m, mode = population.meandisn10m,  right = population.maxdisn10m),
+                            mdt               = np.random.triangular(right = population.minmdt,     mode = population.meanmdt,      left = population.maxmdt),
+                            carretn           = np.random.triangular(right = population.mincarretn, mode =  population.meancarretn, left = population.maxcarretn),
+                            aut               = np.random.triangular(right = population.mindisaut,  mode = population.meandisaut,   left = population.maxdisaut),
+                            ferr              = np.random.triangular(right = population.mindisferr, mode = population.meandisferr,  left = population.maxdisferr),
+                            dis10m            = np.random.triangular(right = population.mindisn10m, mode = population.meandisn10m,  left = population.maxdisn10m),
                             hospi             = population.disthospit,
                             farma             = population.distfarma,
                             ceduc             = population.distceduc,
@@ -817,11 +817,11 @@ class Universe():
                             age = 0,
                             population_centre = population,
                             population_others = [*self.population_centres, *list(self.large_cities)],
-                            mdt               = np.random.triangular(left = population.minmdt,     mode = population.meanmdt,      right = population.maxmdt),
-                            carretn           = np.random.triangular(left = population.mincarretn, mode =  population.meancarretn, right = population.maxcarretn),
-                            aut               = np.random.triangular(left = population.mindisaut,  mode = population.meandisaut,   right = population.maxdisaut),
-                            ferr              = np.random.triangular(left = population.mindisferr, mode = population.meandisferr,  right = population.maxdisferr),
-                            dis10m            = np.random.triangular(left = population.mindisn10m, mode = population.meandisn10m,  right = population.maxdisn10m),
+                            mdt               = np.random.triangular(right = population.minmdt,     mode = population.meanmdt,      left = population.maxmdt),
+                            carretn           = np.random.triangular(right = population.mincarretn, mode =  population.meancarretn, left = population.maxcarretn),
+                            aut               = np.random.triangular(right = population.mindisaut,  mode = population.meandisaut,   left = population.maxdisaut),
+                            ferr              = np.random.triangular(right = population.mindisferr, mode = population.meandisferr,  left = population.maxdisferr),
+                            dis10m            = np.random.triangular(right = population.mindisn10m, mode = population.meandisn10m,  left = population.maxdisn10m),
                             hospi             = population.disthospit,
                             farma             = population.distfarma,
                             ceduc             = population.distceduc,
@@ -1031,22 +1031,22 @@ class Universe():
                 agent.intention()
                 
                 
-                #print("Current value for %s (%s) -> %s" %
-                #      (agent.population_centre.population_name,
-                #       agent.population_centre.population_id,
-                #       str(agent.intention_hist[agent.population_centre.population_id])))
+                print("Current value for %s (%s) -> %s" %
+                      (agent.population_centre.population_name,
+                       agent.population_centre.population_id,
+                       str(agent.intention_hist[agent.population_centre.population_id])))
                 
-                #current_pts = agent.intention_hist[agent.population_centre.population_id]
-                #stored_pts  = dict(sorted(agent.intention_hist.items(), key=lambda item: item[1], reverse = True))
+                current_pts = agent.intention_hist[agent.population_centre.population_id]
+                stored_pts  = dict(sorted(agent.intention_hist.items(), key=lambda item: item[1], reverse = True))
 
-                #for key, value in stored_pts.items():
-                #    if value >= current_pts:
-                #        print("Possible migration to %s -> %s" % (str(key), str(value)))
-                #        rn = np.random.uniform(0,1)
-                #        if rn > value:
-                #            pass
+                for key, value in stored_pts.items():
+                    if value >= current_pts:
+                        print("Possible migration to %s -> %s" % (str(key), str(value)))
+                        rn = np.random.uniform(0,1)
+                        if rn > value:
+                            pass
                 
-                #print("\n")
+                print("\n")
                 
             
         
