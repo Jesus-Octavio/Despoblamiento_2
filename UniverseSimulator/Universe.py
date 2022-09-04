@@ -369,11 +369,11 @@ class Universe():
                             age               = random.randint(init, end),
                             population_centre = population,
                             population_others = [*self.population_centres, *list(self.large_cities)],
-                            mdt               = np.random.triangular(right = population.minmdt,     mode = population.meanmdt,      left = population.maxmdt),
-                            carretn           = np.random.triangular(right = population.mincarretn, mode =  population.meancarretn, left = population.maxcarretn),
-                            aut               = np.random.triangular(right =population.mindisaut,   mode = population.meandisaut,   left = population.maxdisaut),
-                            ferr              = np.random.triangular(right =population.mindisferr,  mode = population.meandisferr,  left = population.maxdisferr),
-                            dis10m            = np.random.triangular(right =population.mindisn10m,  mode = population.meandisn10m,  left =population.maxdisn10m),
+                            mdt               = np.random.triangular(left = population.minmdt,     mode = population.meanmdt,      right = population.maxmdt),
+                            carretn           = np.random.triangular(left = population.mincarretn, mode =  population.meancarretn, right = population.maxcarretn),
+                            aut               = np.random.triangular(left = population.mindisaut,  mode = population.meandisaut,   right = population.maxdisaut),
+                            ferr              = np.random.triangular(left = population.mindisferr, mode = population.meandisferr,  right = population.maxdisferr),
+                            dis10m            = np.random.triangular(left = population.mindisn10m, mode = population.meandisn10m,  right = population.maxdisn10m),
                             hospi             = population.disthospit,
                             farma             = population.distfarma,
                             ceduc             = population.distceduc,
@@ -417,8 +417,8 @@ class Universe():
        'M10A14', 'M15A19', 'M20A24', 'M25A29', 'M30A34', 'M35A39', 'M40A44',
        'M45A49', 'M50A54', 'M55A59']]
             
-            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84', 'H90A94', 'H95A99',
-       'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84', 'M90A94',
+            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84',  'H90A94', 'H95A99',
+       'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84',  'M90A94',
        'M95A99', 'M100YMS']]
     
             mortality = self.mortality_model.predict(df_X_mortality) 
@@ -817,11 +817,11 @@ class Universe():
                             age = 0,
                             population_centre = population,
                             population_others = [*self.population_centres, *list(self.large_cities)],
-                            mdt               = population.meanmdt,
-                            carretn           = population.meancarretn,
-                            aut               = population.meandisaut,
-                            ferr              = population.meandisferr,
-                            dis10m            = population.meandisn10m,
+                            mdt               = np.random.triangular(left = population.minmdt,     mode = population.meanmdt,      right = population.maxmdt),
+                            carretn           = np.random.triangular(left = population.mincarretn, mode =  population.meancarretn, right = population.maxcarretn),
+                            aut               = np.random.triangular(left = population.mindisaut,  mode = population.meandisaut,   right = population.maxdisaut),
+                            ferr              = np.random.triangular(left = population.mindisferr, mode = population.meandisferr,  right = population.maxdisferr),
+                            dis10m            = np.random.triangular(left = population.mindisn10m, mode = population.meandisn10m,  right = population.maxdisn10m),
                             hospi             = population.disthospit,
                             farma             = population.distfarma,
                             ceduc             = population.distceduc,
@@ -1029,9 +1029,28 @@ class Universe():
                 agent.perceived_beahavioural_control()
                 agent.subjective_norm()
                 agent.intention()
+                
+                
+                #print("Current value for %s (%s) -> %s" %
+                #      (agent.population_centre.population_name,
+                #       agent.population_centre.population_id,
+                #       str(agent.intention_hist[agent.population_centre.population_id])))
+                
+                #current_pts = agent.intention_hist[agent.population_centre.population_id]
+                #stored_pts  = dict(sorted(agent.intention_hist.items(), key=lambda item: item[1], reverse = True))
+
+                #for key, value in stored_pts.items():
+                #    if value >= current_pts:
+                #        print("Possible migration to %s -> %s" % (str(key), str(value)))
+                #        rn = np.random.uniform(0,1)
+                #        if rn > value:
+                #            pass
+                
+                #print("\n")
+                
             
         
-        return 2
+        #return 2
                
     def remove_person_from_universe(self, agent):
         # METHOD TO REMOVE PEOPLE FROM UNIVERSE (those who die mainly)
@@ -1748,7 +1767,7 @@ class Universe():
         print("\n")
         for population in self.population_centres:
             population.Print()
-            #population.Print_features()
+            population.Print_features()
             ################### TRYING TO BUILD UP FAMILIES ###################
             print("\n")
             #population.Print_families()

@@ -55,8 +55,8 @@ if __name__ == "__main__":
     path             = "Dominio/Comarca_2_atractor/Comarca_2_aislado/"
     df_historic_ages = pd.read_csv(path + "df_2_atractor_aislado_historic_ages.csv")
     df_families      = pd.read_csv(path + "df_2_atractor_aislado_families.csv")
-    df_features      = pd.read_csv(path + "df_2_atractor_aislado_infra_coords_normal.csv")
-    df_income_spend  = pd.read_csv(path + "df_2_atractor_aislado_income_spend_normal.csv") 
+    df_features      = pd.read_csv(path + "df_2_atractor_aislado_infra_coords.csv")
+    df_income_spend  = pd.read_csv(path + "df_2_atractor_aislado_income_spend.csv") 
     
     # DISTANCES
     path             = "Dominio/Comarca_2_atractor/"
@@ -64,8 +64,8 @@ if __name__ == "__main__":
     
     # Large Cities
     path             = "Dominio/Comarca_2_atractor/Atractor_aislado/"
-    df_features_large_cities     = pd.read_csv(path + "df_2_atractor_aislado_infra_coords_normal.csv")
-    df_income_spend_large_cities = pd.read_csv(path + "df_2_atractor_aislado_income_spend_normal.csv")
+    df_features_large_cities     = pd.read_csv(path + "df_2_atractor_aislado_infra_coords.csv")
+    df_income_spend_large_cities = pd.read_csv(path + "df_2_atractor_aislado_income_spend.csv")
     
     # Subjective norm (social)
     path             = "Dominio/Subjective_Norm/"
@@ -99,18 +99,16 @@ if __name__ == "__main__":
                            alphas = list(np.random.uniform(0, 1, 3)),
                            natality_model  = natality_model,
                            mortality_model = mortality_model)
-    my_universe.Print()
+    #my_universe.Print()
 
     
         
     for i in range(1, 2):
         my_universe.update()
-        my_universe.Print()
+        #my_universe.Print()
     
     
-    #my_universe.regression_metrics()
+    my_universe.regression_metrics()
     app = SeaofBTCapp(universe = my_universe)
     app.mainloop()
        
-#app = SeaofBTCapp()
-#app.mainloop()

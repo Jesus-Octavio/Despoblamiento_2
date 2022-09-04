@@ -164,10 +164,7 @@ class PopulationCentre():
         except:
             self.mortality_hist_real.append(self.mortality_real)
       
-        
-        
-            
-        
+    
         
         
     def update_population_hist(self):
@@ -229,31 +226,26 @@ class PopulationCentre():
         print("Min  height above the sea level (m):     %f" % self.minmdt)
         print("Man  height above the sea level (m):     %f" % self.maxmdt)
         print("Mean height above the sea level (m):     %f" % self.meanmdt)
-        print("Std  height above the sea level (m):     %f" % self.stdmdt)
         print("Min  distance to a 10k pop. centre (m):  %f" % self.mindisn10m)
         print("Max  distance to a 10k pop. centre (m):  %f" % self.maxdisn10m)
         print("Mean distance to a 10k pop. centre (m):  %f" % self.meandisn10m)
-        print("Std  distance to a 10k pop. centre (m):  %f" % self.stddisn10m)
         print("Min  distance to road (m):               %f" % self.mincarretn)
         print("Max  distance to road (m):               %f" % self.maxcarretn)
         print("Mean distance to road (m):               %f" % self.meancarretn)
-        print("Std  distance to road (m):               %f" % self.stdcarretn)
         print("Min  distance to highway (m):            %f" % self.mindisaut)
         print("Max  distance to highway (m):            %f" % self.maxdisaut)
         print("Mean distance to highway (m):            %f" % self.meandisaut)
-        print("Std  distance to highway (m):            %f" % self.stddisaut)
         print("Min  distance to railroad (m):           %f" % self.mindisferr)
         print("Max  distance to railroad (m):           %f" % self.maxdisferr)
         print("Mean distance to railroad (m):           %f" % self.meandisferr)
-        print("Std  distance to railroad (m):           %f" % self.stddisferr)
         print("Mean distance to hospital (m):           %f" % self.disthospit)
         print("Mean distance to pharmacy (m):           %f" % self.distfarma)
         print("Mean distance to education centre (m):   %f" % self.distceduc)
         print("Mean distance to emergency centre (m):   %f" % self.distcurgh)
         print("Mean distance to healthcare centre (m):  %f" % self.distatprim)
-        print("Mean annual income:                      %f" % self.salario)
-        print("Mean annaual spenditure:                 %f" % self.gasto)
-        print("\n")
+        print("Mean annual income (€):                  %f" % self.salario)
+        print("Mean annual spenditure(€):               %f" % self.gasto)
+        print("\n") 
         
     def Print_families(self):
         

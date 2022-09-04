@@ -149,7 +149,7 @@ class PopulationCentrePage(Pages, tk.Frame,):
                 print(item)
             
             
-        show = tk.Label(self, text = "SELECCIONE UN MUNICIPIO", font = ("Times", 14), padx = 10, pady = 10)
+        show = tk.Label(self, text = "SELECCIONE UN MUNICIPIO", font = ("Times", 28), padx = 10, pady = 10)
         show.pack() 
         lb = tk.Listbox(self, selectmode = "multiple")
         lb.pack(padx = 10, pady = 10, fill = "both") 
