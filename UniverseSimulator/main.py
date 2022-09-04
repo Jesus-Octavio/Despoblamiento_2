@@ -103,12 +103,10 @@ if __name__ == "__main__":
 
     
         
-    for i in range(1, 2):
-        my_universe.update()
+    #for i in range(1, 2):
+        #my_universe.update()
         #my_universe.Print()
     
-    
-    my_universe.regression_metrics()
     app = SeaofBTCapp(universe = my_universe)
     app.mainloop()
        

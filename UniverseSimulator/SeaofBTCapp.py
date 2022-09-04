@@ -58,7 +58,8 @@ class SeaofBTCapp(Pages, tk.Tk):
         self.frames = {}
         
 
-        for F in (StartPage, PageOne, PopulationCentrePage, PlotPage, YearsPage,
+        for F in (StartPage, PageOne, IterationPage,
+                  PopulationCentrePage, PlotPage, YearsPage,
                   YearsPageBA, YearsPageSN, YearsPagePBC, YearsPageI):
 
             frame = F(container, self)
@@ -84,6 +85,7 @@ class SeaofBTCapp(Pages, tk.Tk):
         
         
 
+        
 class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -100,7 +102,63 @@ class StartPage(tk.Frame):
         
         tk.Button(self,
                   text = "ENTER",
-                  command = lambda: controller.show_frame(PageOne)).pack()
+                  command = lambda: controller.show_frame(IterationPage)).pack()
+
+
+
+
+class IterationPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        
+        
+        def iterate_universe(n_iter):
+            #  tkinter updates things when your program is idle. !!!!
+            label = tk.Label(self,
+                     text = "....ESTAMOS TRABAJANDO EN ELLO... \n AÑO %s ALCANZADO \n CONTINÚE" % str(2010 + n_iter),
+                     font = ("Times", 14))
+            label.place(anchor="center", relx=0.5, rely=0.5)
+            
+            for i in range(1, n_iter):
+                controller.universe.update()
+                        
+               
+        tk.Frame.__init__(self, parent)
+                
+        
+        
+        
+        iter_label = tk.Label(self,
+                              text = "INTRODUZCA NÚMERO DE ITERACIONES",
+                              font = ("Times", 20))
+        
+        
+        year_label = tk.Label(self,
+                              text = "AÑO DE INICIO: 2010",
+                              font = ("Times", 20))
+        
+        year_label2 = tk.Label(self,
+                              text = "1 iteración = 1 año",
+                              font = ("Times", 20))
+        
+        
+        iter_entry = tk.Entry(self)
+        iter_label.pack()
+        year_label.pack()
+        year_label2.pack()
+        iter_entry.pack()
+         
+        button_ok = tk.Button(self,
+                              text='COMENZAR EJECUCIÓN',
+                              command = lambda: iterate_universe(int(iter_entry.get())))
+        button_ok.pack()
+        
+        
+        tk.Button(self,
+                  text = "CONTINUAR",
+                  command = lambda: controller.show_frame(PageOne)).\
+                  pack(side = "bottom")
+        
         
         
 class PageOne(tk.Frame):
