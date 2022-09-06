@@ -94,6 +94,8 @@ class Agents():
         self.alphas = alphas
         self.intention_hist = {}
         
+        # If migrated before
+        self.mig_prev = 0
         
         
         
@@ -144,11 +146,16 @@ class Agents():
         #return None
         factor_0 = beta_0 * self.mdt
     
-        factor_1 = beta_1 * np.mean([self.carretn, self.aut,
-                                          self.ferr, self.dis10m])
+        factor_1 = beta_1 * np.mean([self.carretn,
+                                     self.aut,
+                                     self.ferr,
+                                     self.dis10m])
     
-        factor_2 = beta_2 * np.mean([self.hospi, self.farma, self.ceduc,
-                                          self.curgh, self.atprim])
+        factor_2 = beta_2 * np.mean([self.hospi,
+                                     self.farma,
+                                     self.ceduc,
+                                     self.curgh,
+                                     self.atprim])
         
         ba_current = factor_0 + factor_1 + factor_2
         
@@ -164,12 +171,17 @@ class Agents():
             
             factor_0 = beta_0 * elem.meanmdt
             
-            factor_1 = beta_1 * np.mean([elem.meancarretn, elem.meandisaut,
-                                              elem.meandisferr, elem.meandisn10m])
+            factor_1 = beta_1 * np.mean([np.random.triangular(right = elem.mincarretn, mode =  elem.meancarretn, left = elem.maxcarretn), 
+                                         np.random.triangular(right = elem.mindisaut,  mode = elem.meandisaut,   left = elem.maxdisaut),
+                                         np.random.triangular(right = elem.mindisferr, mode = elem.meandisferr,  left = elem.maxdisferr),
+                                         np.random.triangular(right = elem.mindisn10m, mode = elem.meandisn10m,  left = elem.maxdisn10m),
+                                         ])
     
-            factor_2 = beta_2 * np.mean([elem.disthospit, elem.distfarma, 
-                                              elem.distceduc, elem.distcurgh,
-                                              elem.distatprim])
+            factor_2 = beta_2 * np.mean([elem.disthospit,
+                                         elem.distfarma, 
+                                         elem.distceduc,
+                                         elem.distcurgh,
+                                         elem.distatprim])
     
             ba_current = factor_0 + factor_1 + factor_2
             
@@ -180,10 +192,10 @@ class Agents():
             else:
                 self.population_centre.ba_hist[year][elem.population_id].append(float(ba_current))
             
-        values = self.ba_hist.values()
-        min_ = min(values)
-        max_ = max(values)
-        self.ba_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.ba_hist.items() } 
+        #values = self.ba_hist.values()
+        #min_ = min(values)
+        #max_ = max(values)
+        #self.ba_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.ba_hist.items() } 
             
      
     def subjective_norm(self):
@@ -216,7 +228,7 @@ class Agents():
             else:
                 my_in = 0
              
-            my_res =  theta_0 * (my_out - my_in)
+            my_res =  theta_0 * (my_out - my_in) * 100
             self.sn_hist[destination.population_id]   = my_res
                 
             if not destination.population_id in self.population_centre.sn_hist[year].keys():
@@ -224,10 +236,10 @@ class Agents():
             else:
                 self.population_centre.sn_hist[year][destination.population_id].append(float(my_res))
             
-        values = self.sn_hist.values()
-        min_ = min(values)
-        max_ = max(values)
-        self.sn_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.sn_hist.items() } 
+        #values = self.sn_hist.values()
+        #min_ = min(values)
+        #max_ = max(values)
+        #self.sn_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.sn_hist.items() } 
         
         
         
@@ -254,7 +266,11 @@ class Agents():
         #print("\n")
         #return None
         
-        pbc_current = self.salario - self.gasto * (1 + (gamma_0 * float(self.population_centre.distances[str(self.population_centre.population_id)])))
+        #print(float(np.asarray(self.salario)))
+        #print(float(np.asarray(self.gasto)))
+        #print(float(self.population_centre.distances[str(self.population_centre.population_id)]))
+        
+        pbc_current = float(np.asarray(self.salario)) - float(np.asarray(self.gasto)) * (1 + (gamma_0 * float(self.population_centre.distances[str(self.population_centre.population_id)])))
         
         self.pbc_hist[self.population_centre.population_id] = float(pbc_current)
         
@@ -265,7 +281,7 @@ class Agents():
         
         
         for elem in temp:
-            pbc_current = self.salario - self.gasto * (1 + (gamma_0 * float(self.population_centre.distances[str(elem.population_id)])))
+            pbc_current = float(np.asarray(self.salario)) - float(np.asarray(self.gasto)) * (1 + (gamma_0 * float(self.population_centre.distances[str(elem.population_id)])))
             
             self.pbc_hist[elem.population_id] = float(pbc_current)
             
@@ -274,11 +290,11 @@ class Agents():
             else:
                 self.population_centre.pbc_hist[year][elem.population_id].append(float(pbc_current))
                 
-        
-        values = self.pbc_hist.values()
-        min_ = min(values)
-        max_ = max(values)
-        self.pbc_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.pbc_hist.items() }
+        #print("\n")
+        #values = self.pbc_hist.values()
+        #min_ = min(values)
+        #max_ = max(values)
+        #self.pbc_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.pbc_hist.items() }
    
 
       
@@ -313,13 +329,9 @@ class Agents():
         #max_ = max(values)
         #self.intention_hist = {key: ((v - min_ ) / (max_ - min_) )  for (key, v) in self.intention_hist.items() }
 
-
+            
         
-        
-     
-                    
-        
-
+    """
     def migrate(self):
         # If a person want to migrate
         # If the peson is "unhappy" (?)
@@ -339,7 +351,62 @@ class Agents():
         else:
             b = False
         return b
+    """
     
+    
+    def update_infra(self):
+        # Height abpve the sea level
+        self.mdt      = np.random.triangular(right = self.population_centre.minmdt,
+                                             mode  = self.population_centre.meanmdt, 
+                                             left  = self.population_centre.maxmdt)
+        # Distance to road
+        self.carretn  = np.random.triangular(right = self.population_centre.mincarretn,
+                                             mode  = self.population_centre.meancarretn, 
+                                             left  = self.population_centre.maxcarretn)
+        # Distance to highway
+        self.aut      = np.random.triangular(right = self.population_centre.mindisaut,
+                                             mode  = self.population_centre.meandisaut, 
+                                             left  = self.population_centre.maxdisaut)
+        # Distance to railroads
+        self.ferr     = np.random.triangular(right = self.population_centre.mindisferr,
+                                             mode  = self.population_centre.meandisferr,
+                                             left  = self.population_centre.maxdisferr)
+        # Distamce to 10k population centre
+        self.dis10m   = np.random.triangular(right = self.population_centre.mindisn10m,
+                                             mode  = self.population_centre.meandisn10m,
+                                             left  = self.population_centre.maxdisn10m)
+        # Distance to hospital
+        self.hospi    = self.population_centre.disthospit
+        # Distamce to pharmacy
+        self.farma    = self.population_centre.distfarma
+        # Distance to education centre
+        self.ceduc    = self.population_centre.distceduc
+        # Distance to emergency centre
+        self.curgh    = self.population_centre.distcurgh
+        # Distance to primary healthcare centre
+        self.atprim   = self.population_centre.distatprim
+    
+    
+    
+    def update_eco(self, df_eco_mun, df_eco_atr):
+        
+        #print("LOOKINF FOR %s" % self.population_centre.population_id)
+        
+        if self.population_centre.population_id in list(df_eco_mun["CODMUN"]):
+            #print("ENCONTRADO EN MUN")
+            df_temp_3 = df_eco_mun.query('CODMUN == ' + str(self.population_centre.population_id))
+        
+        elif self.population_centre.population_id in list(df_eco_atr["CODMUN"]):
+            #print("ENCONTRADO EN ATR")
+            df_temp_3 = df_eco_atr.query('CODMUN == ' + str(self.population_centre.population_id))
+        
+        
+        #print("\n")
+        self.salario     = df_temp_3["SALARIO_MEAN_" + str(self.population_centre.year)].values,
+        # Cost of living
+        self.gasto       = df_temp_3["GASTO_MEAN_" + str(self.population_centre.year)].values,
+        
+        
 
     ####################### TRYING TO BUILD UP FAMILES #######################
     # When updating, roles change

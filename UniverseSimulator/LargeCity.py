@@ -9,7 +9,7 @@ Created on Mon Mar 14 10:39:38 2022
 class LargeCity():
     
     # LARGE CITY CONSTRUCTOR
-    def __init__(self, 
+    def __init__(self,  year,
                  identifier, name,
                  longitud, latitud,
                  minmdt, maxmdt, meanmdt, 
@@ -26,6 +26,7 @@ class LargeCity():
                  gasto,
                  social,):
         
+        self.year = year
         self.population_id = identifier
         self.population_name = name
         
@@ -59,6 +60,15 @@ class LargeCity():
         
         self.inhabitants = []
 
+
+        self.num_men = 0
+        self.num_women = 0
+        
+        
+        self.families = {"fam_one_person" : [],
+                         "fam_kids"       : []}
+        self.families_hist = {}
+        
     
     def Print_features(self):
         print('###################################################')

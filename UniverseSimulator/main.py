@@ -45,6 +45,7 @@ from  matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationTool
 
 import plotly.offline as py
 import sys
+import csv
 
      
 if __name__ == "__main__":
@@ -83,6 +84,19 @@ if __name__ == "__main__":
     # beta[2] -> hostital, pharmacy, education, emergency, healthcare 
     
     # gamma: parameter for subjective norm
+    
+    
+    with open("Results/total.csv", "a", newline = "") as file:
+        writer = csv.writer(file)
+        writer.writerow(["TransactionAmt", "Source", "Target", "Date"])
+                
+    with open("Results/kids.csv", "a", newline = "") as file:
+        writer = csv.writer(file)
+        writer.writerow(["TransactionAmt", "Source", "Target", "Date"])
+                
+    with open("Results/unip.csv", "a", newline = "") as file:
+        writer = csv.writer(file)
+        writer.writerow(["TransactionAmt", "Source", "Target", "Date"])
                  
     my_universe = Universe(year                         = year,
                            df_historic_ages             = df_historic_ages,
@@ -103,7 +117,7 @@ if __name__ == "__main__":
 
     
         
-    for i in range(1, 2):
+    for i in range(1, 3):
         my_universe.update()
         #my_universe.Print()
     

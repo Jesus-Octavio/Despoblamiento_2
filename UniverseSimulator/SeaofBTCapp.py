@@ -120,7 +120,7 @@ class IterationPage(tk.Frame):
             label.place(anchor="center", relx=0.5, rely=0.5)
             
             for i in range(1, n_iter):
-                controller.universe.update()
+                controller.universe = controller.universe.update()
                         
                
         tk.Frame.__init__(self, parent)

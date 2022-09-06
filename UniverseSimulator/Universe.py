@@ -32,6 +32,8 @@ import warnings
 import re
 from varname import nameof
 from itertools import chain
+import csv
+from statistics import mean
 
 # Load libraries for plots
 import plotly.express as px
@@ -274,6 +276,7 @@ class Universe():
         
             # Invoke Population Center constructor
             the_population = LargeCity(
+                    year        = self.year,
                     identifier  = df_temp_2["CODMUN"],
                     name        = df_temp_2["NOMBRE"],
                     # Select features for the population centre
@@ -584,7 +587,7 @@ class Universe():
                         
                                 if my_bool:
                                     # if theres no father
-                                    if not family.mother:
+                                    if not family.father:
                                         family.update(agent, "mother")
                                         break
                                     else: # verify ages
@@ -613,6 +616,7 @@ class Universe():
         
                     
     def update(self):
+        print("NEW UPDATE")
         global agent_idx
         # Update year for Universe
         self.year = str(int(self.year) + 1)
@@ -622,6 +626,8 @@ class Universe():
             population.ages_hist[self.year + "M"] = population.ages_hist[str(int(self.year) - 1) + "M"].copy()
             population.ages_hist[self.year + "F"] = population.ages_hist[str(int(self.year) - 1) + "F"].copy()
             
+            
+        for population in self.population_centres:
             #print("INICIO ACTUALIZACION")
             #print("HOMBRES")
             #print(population.ages_hist[self.year + "M"])
@@ -946,7 +952,177 @@ class Universe():
                     
                 
                 ###############################################################
-
+                
+                
+            for agent in population.inhabitants:
+                agent.behavioural_attitude()
+                agent.perceived_beahavioural_control()
+                agent.subjective_norm()
+                agent.intention()
+                
+                
+            
+            #print("FAMILIES WITH KIDS")
+            
+            my_copy = population.families["fam_kids"].copy()
+            for family in my_copy:
+                if len(family.members) > 0:
+                    #print("NEW FAMILY")
+                    #print("FAMILY LOCATION %s" % family.population_centre.population_name)
+                    dictionaryList = []
+                    new = {}
+                    for member in family.members:
+                        temp = member.intention_hist
+                        #print("MEMBER DICT:")
+                        #print(temp)
+                        #print("\n")
+                        dictionaryList.append(temp)
+                    for key in temp.keys():
+                        new[key] = mean([d[key] for d in dictionaryList ])
+                    #print("MEAN")
+                    #print(new)
+                    #print("\n")
+                    #print("Current value for %s (%s) -> %s" %
+                    #  (family.population_centre.population_name,
+                    #   family.population_centre.population_id,
+                    #   str(new[family.population_centre.population_id])))
+                    
+                    
+                    current_pts = new[family.population_centre.population_id]
+                    
+                    my_origin = family.population_centre.population_id
+                    
+                    stored_pts  = dict(sorted(new.items(), key=lambda item: item[1], reverse = True))
+                    rn = np.random.uniform(0, 1)
+                    for key, value in stored_pts.items():
+                        if value >= current_pts:
+                            #print("Possible migration to %s -> %s" % (str(key), str(value)))
+                            if rn >= value:
+                                pass
+                            else:
+                                # Migrate
+                                temp = [*self.population_centres, *self.large_cities]
+                                new_population = [x for x in temp if str(x.population_id) == str(key)][0]
+                                
+                                attr =[str(x.population_id) for x in self.large_cities]
+                                
+                                while family in population.families["fam_kids"]:
+                                    family.remove_family()
+                                    
+                                    
+                                    
+                                family.add_family_2(new_population,
+                                                    df1 = self.df_income_spend,
+                                                    df2 = self.df_income_spend_large_cities,
+                                                    year = self.year,
+                                                    attr = attr)
+                                
+                                with open("Results/kids.csv", "a", newline = "") as file:
+                                    writer = csv.writer(file)
+                                    writer.writerow([1, my_origin, key, self.year])
+                                    
+                                with open("Results/total.csv", "a", newline = "") as file:
+                                    writer = csv.writer(file)
+                                    writer.writerow([len(family.members), my_origin, key, self.year])
+                                
+                                #family.population_centre = population
+                                
+                                #for agent_temp in family.members:
+                                #    interval = myround(agent_temp.age)
+                                #    print("ESTAMOS EN EL MUNICIPIO %s" % population.population_name)
+                                #    print(agent_temp.population_centre.population_name)
+                                #    agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] -= 1
+                                #    agent_temp.remove_agent()
+                                    
+                                #    if family in population.families["fam_kids"]:
+                                #        family.remove_family()
+                                    
+                                #    agent_temp.population_centre = new_population
+                                #    agent_temp.add_agent()
+                                    
+                                #    agent_temp.update_infra()
+                                #    agent_temp.update_eco(df_eco_mun = self.df_income_spend,
+                                #                          df_eco_atr = self.df_income_spend_large_cities)
+                                    
+                                    
+                                #    if new_population not in self.large_cities:
+                                #        agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] += 1
+                                    
+                                #    if family not in  new_population.families["fam_kids"]:
+                                #        family.add_family()
+                                        
+                                 
+                                #with open("Results/kids.csv", "a", newline = "") as file:
+                                #    writer = csv.writer(file)
+                                #    writer.writerow([1, my_origin, key, self.year])
+                                    
+                                #with open("Results/total.csv", "a", newline = "") as file:
+                                #    writer = csv.writer(file)
+                                #    writer.writerow([len(family.members), my_origin, key, self.year])
+                                #print("MIGRACION EFECTUADA")
+                                #print("\n")
+                                break
+                                    
+                                
+                    #print("\n")
+                    #print("\n")
+                    
+            
+            
+            #print("UNIPERSON FAMILIES")
+            my_copy_2 = population.families["fam_one_person"].copy()
+            for unifamily in my_copy_2:
+                #print("NEW UNIFAM %s" % unifamily)
+                #print("FAM LOCATION %s" % unifamily.population_centre.population_name)
+                my_origin = unifamily.population_centre.population_id
+                agent_temp = unifamily.members
+                #print("MEM LOCATION %s" % agent_temp.population_centre.population_name)
+                #print("Current value for %s (%s) -> %s" %
+                #      (agent_temp.population_centre.population_name,
+                #       agent_temp.population_centre.population_id,
+                #       str(agent_temp.intention_hist[agent_temp.population_centre.population_id])))
+                
+                current_pts = agent_temp.intention_hist[agent_temp.population_centre.population_id]
+                stored_pts  = dict(sorted(agent_temp.intention_hist.items(), key=lambda item: item[1], reverse = True))
+                rn = np.random.uniform(0,1)
+                for key, value in stored_pts.items():
+                    if value >= current_pts:
+                        #print("Possible migration to %s -> %s" % (str(key), str(value)))
+                        if rn >= value:
+                            pass
+                        else:
+                            # Migrate 
+                            interval = myround(agent_temp.age)
+                            unifamily.population_centre.ages_hist[self.year + agent_temp.sex][interval] -= 1
+                            agent_temp.remove_agent()
+                            unifamily.remove_family()
+                            temp = [*self.population_centres, *self.large_cities]
+                            new_population = [x for x in temp if str(x.population_id) == str(key)][0]
+                            agent_temp.population_centre = new_population
+                            agent_temp.add_agent()
+                            agent_temp.update_infra()
+                            agent_temp.update_eco(df_eco_mun = self.df_income_spend,
+                                                  df_eco_atr = self.df_income_spend_large_cities)
+                            
+                            unifamily.add_family()
+                            if new_population not in self.large_cities:
+                                agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] += 1
+                                
+                                
+                            with open("Results/unip.csv", "a", newline = "") as file:
+                                    writer = csv.writer(file)
+                                    writer.writerow([1, my_origin, key, self.year])
+                                    
+                            with open("Results/total.csv", "a", newline = "") as file:
+                                    writer = csv.writer(file)
+                                    writer.writerow([1, my_origin, key, self.year])
+                
+                            break
+                #print("\n")
+                #print("\n")
+            
+            #break
+            
             
             ### UPDATE MORTALITY, NATALITY, .... ###
             #d_args_update = {}
@@ -985,7 +1161,7 @@ class Universe():
             
             
             
-            print(population.population_name)
+            #print(population.population_name)
         
             ### INVOKE NATALITY AND MORTALITY MODELS ###
             df = pd.DataFrame.from_dict(population.ages_hist)        
@@ -1024,43 +1200,21 @@ class Universe():
             # Update historial for families
             population.update_families_hist()
             
-            for agent in population.inhabitants:
-                agent.behavioural_attitude()
-                agent.perceived_beahavioural_control()
-                agent.subjective_norm()
-                agent.intention()
-                
-                
-                print("Current value for %s (%s) -> %s" %
-                      (agent.population_centre.population_name,
-                       agent.population_centre.population_id,
-                       str(agent.intention_hist[agent.population_centre.population_id])))
-                
-                current_pts = agent.intention_hist[agent.population_centre.population_id]
-                stored_pts  = dict(sorted(agent.intention_hist.items(), key=lambda item: item[1], reverse = True))
-
-                for key, value in stored_pts.items():
-                    if value >= current_pts:
-                        print("Possible migration to %s -> %s" % (str(key), str(value)))
-                        rn = np.random.uniform(0,1)
-                        if rn > value:
-                            pass
-                
-                print("\n")
+            
                 
             
         
-        #return 2
                
     def remove_person_from_universe(self, agent):
         # METHOD TO REMOVE PEOPLE FROM UNIVERSE (those who die mainly)
-        # Remove from the universe
         self.universe_persons.remove(agent)
         
         
     def add_person_to_universe(self, agent):
         # METHOD TO ADD PEOPLE TO THE UNIVERSE (newborn babies mainly)
         self.universe_persons.append(agent)    
+        
+        
         
         
     ###########################################################################
@@ -1636,9 +1790,14 @@ class Universe():
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
         fig.update_layout(title_text = "Actitud (BA) en %s hacia el resto de municipios en el año %s" 
-                        % (my_population.population_name, str(year)))
+                        % (my_population.population_name, str(year)),
+                        title_font=dict(size=25))
+        
+        fig.update_xaxes(tickfont=dict(size=20), tickangle=-45)
+        fig.update_yaxes(tickfont=dict(size=17))
+        
         fig.update_layout(showlegend=False)
-  
+        
         return fig
     
     
@@ -1663,8 +1822,12 @@ class Universe():
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
         fig.update_layout(title_text = "Control del comportamieto percibido (PBC) en %s hacia el resto de municipios en el año %s" 
-                        % (my_population.population_name, str(year)))
+                        % (my_population.population_name, str(year)),
+                        title_font=dict(size=25))
         fig.update_layout(showlegend=False)
+        
+        fig.update_xaxes(tickfont=dict(size=20), tickangle=-45)
+        fig.update_yaxes(tickfont=dict(size=17))
   
         return fig
     
@@ -1693,8 +1856,11 @@ class Universe():
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
         fig.update_layout(title_text = "Norma Subjetiva (SN) en %s hacia el resto de municipios en el año %s" 
-                        % (my_population.population_name, str(year)))
+                        % (my_population.population_name, str(year)),
+                        title_font=dict(size=25))
         fig.update_layout(showlegend=False)
+        fig.update_xaxes(tickfont=dict(size=20), tickangle=-45)
+        fig.update_yaxes(tickfont=dict(size=17))
   
         return fig
     
@@ -1722,8 +1888,11 @@ class Universe():
             fig.add_trace(go.Box(y=df[col].values, name=name))
             
         fig.update_layout(title_text = "Intención (I) en %s hacia el resto de municipios en el año %s" 
-                        % (my_population.population_name, str(year)))
+                        % (my_population.population_name, str(year)),
+                        title_font=dict(size=25))
         fig.update_layout(showlegend=False)
+        fig.update_xaxes(tickfont=dict(size=20), tickangle=-45)
+        fig.update_yaxes(tickfont=dict(size=17))
   
         return fig
             

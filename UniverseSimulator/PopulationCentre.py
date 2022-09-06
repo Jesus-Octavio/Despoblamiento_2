@@ -90,8 +90,6 @@ class PopulationCentre():
         self.gasto       = gasto
         self.distances   = distances
                     
-        # Mean happiness for inhabitants
-        self.mean_happiness = self.update_mean_happiness()
         
         ## PLOT. MULILINE CHART: POPULATION DYNAMICS
         self.natality_hist        = []
@@ -188,20 +186,6 @@ class PopulationCentre():
     ###########################################################################
             
     
-    def update_mean_happiness(self):
-        """
-        Method to compute mean happiness for the population centre.
-        The mean happiness for a population centre is the result 
-        of averaging inhabitants's happiness
-        """
-        mean_happiness = 0
-        # Both must be the same !!! Are they? 
-        # Problemns with initialization by ages
-        num_inhabitants = self.num_men + self.num_women
-        #num_inhabitants_2 = len(self.inhabitants)
-        for agent in self.inhabitants:
-            mean_happiness = mean_happiness + (agent.happiness  / num_inhabitants)
-        return mean_happiness
     
     
       

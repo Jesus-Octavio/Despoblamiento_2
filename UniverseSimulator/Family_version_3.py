@@ -5,6 +5,30 @@ Created on Sat May  7 10:35:29 2022
 
 @author: jesus
 """
+import math
+
+
+def myround(x, base=5):     
+    """
+    Auxiliary function. Given an age, returns its range according to
+    the discretization in the read data.
+        
+    Examples
+    ------
+    >>> myround(1)
+    0-4        
+    >>> myround(23)
+    20-24        
+    >>> myround(106)
+    >100
+    """
+    init = base * math.floor(float(x) / base)    
+    if init >= 100:
+        return '>' + str(100)     
+    end =  base * math.ceil(float(x) / base)
+    if init == end:
+        end = end + 5
+    return str(init) + '-' + str(end - 1)
 
 
 import warnings
@@ -25,10 +49,31 @@ class Family():
             self.population_centre.families["fam_one_person"].append(self)
             
         elif isinstance(self, Fam_kids):
+            self.population_centre = self.members[0].population_centre
             self.population_centre.families["fam_kids"].append(self)
+        
+        
         else:
             warnings.warn("FAMILY CLASS UNDEFINED")
             
+    
+    def add_family_2(self, population, df1, df2, year ,attr):
+        self.population_centre = population
+        self.population_centre.families["fam_kids"].append(self)
+        for agent in self.members:
+            interval = myround(agent.age)
+            agent.population_centre.ages_hist[year + agent.sex][interval] -= 1
+            agent.remove_agent()
+            agent.population_centre = population
+            agent.add_agent()
+            agent.update_infra()
+            agent.update_eco(df_eco_mun = df1,
+                             df_eco_atr = df2)
+            
+            if str(agent.population_centre.population_id) not in attr:
+                agent.population_centre.ages_hist[year + agent.sex][interval] += 1
+            
+        
     
     def remove_family(self):
         if isinstance(self, Fam_one_person):
