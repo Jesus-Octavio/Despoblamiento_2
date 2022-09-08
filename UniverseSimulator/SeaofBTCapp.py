@@ -263,8 +263,9 @@ class YearsPageBA(Pages, tk.Frame):
     def __init__(self, parent, controller):
         
         def plotter(year):
+            path = "pruebas/prueba14/"
             fig = controller.universe.plot_behavioural_attitude(int(Pages._id), year)    
-            py.plot(fig, filename = "tpb_ba.html", auto_open = True)
+            py.plot(fig, filename = path + "tpb_ba"+ str(Pages.name)+".html", auto_open = True)
         
         tk.Frame.__init__(self, parent)
         
@@ -286,8 +287,9 @@ class YearsPageSN(Pages, tk.Frame):
     def __init__(self, parent, controller):
         
         def plotter(year):
+            path = "pruebas/prueba14/"
             fig = controller.universe.plot_subjective_norm(int(Pages._id), year)    
-            py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
+            py.plot(fig, filename = path + "tpb_pbc"+ str(Pages.name)+".html", auto_open = True)
         
         tk.Frame.__init__(self, parent)
         
@@ -308,8 +310,9 @@ class YearsPagePBC(Pages, tk.Frame):
     def __init__(self, parent, controller):
         
         def plotter(year):
+            path = "pruebas/prueba14/"
             fig = controller.universe.plot_perceived_behavioural_control(int(Pages._id), year)    
-            py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
+            py.plot(fig, filename = path + "tpb_pbc"+ str(Pages.name)+".html", auto_open = True)
         
         tk.Frame.__init__(self, parent)
         
@@ -331,7 +334,7 @@ class YearsPageI(Pages, tk.Frame):
     def __init__(self, parent, controller):
         
         def plotter(year):
-            path = "Graficos/Intention/"
+            path = "pruebas/prueba14/"
             fig = controller.universe.plot_intention(int(Pages._id), year)    
             py.plot(fig, filename = path + "tpb_intention_" + str(Pages.name) + ".html", auto_open = True)
         
@@ -355,46 +358,54 @@ class PlotPage(Pages, tk.Frame,):
     def __init__(self, parent, controller):
         
         def button_1_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_population_hist(int(Pages._id))    
-            py.plot(fig, filename = "multiline.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"multiline.html", auto_open = True)
             
         def button_2_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_population_pyramid(int(Pages._id))    
-            py.plot(fig, filename = "piramide.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"piramide_2.html", auto_open = True)
             
         def button_3_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_families(int(Pages._id))    
-            py.plot(fig, filename = "piramide.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"piramide_3.html", auto_open = True)
                         
         def button_4_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_in_out(int(Pages._id))    
-            py.plot(fig, filename = "in_out.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"in_out.html", auto_open = True)
             
         def button_5_plot():
-            path_lineas   = "Graficos/Ciudades/Lineas/ann-linreg/"
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_test_vegetativo(int(Pages._id))    
-            py.plot(fig, filename = path_lineas + str(Pages.name).replace(" ", "-") + "-lineas_ann-linreg.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") + "-test_vegetativo.html", auto_open = True)
             
         def button_6_plot():
-            path_piramide = "Graficos/Ciudades/Piramide/ann-linreg/"
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_vegetativo_test_pyramid(int(Pages._id))    
-            py.plot(fig, filename = path_piramide + str(Pages.name).replace(" ", "-") + "-piramide_ann-linreg.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") + "-piramide_6.html", auto_open = True)
             
         def button_7_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_behavioural_attitude(int(Pages._id))    
-            py.plot(fig, filename = "tpb_ba.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"tpb_ba.html", auto_open = True)
             
         def button_8_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_subjective_norm(int(Pages._id))    
-            py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"tpb_pbc.html", auto_open = True)
             
         def button_9_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_perceived_behavioural_control(int(Pages._id))    
-            py.plot(fig, filename = "tpb_pbc.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"tpb_pbc.html", auto_open = True)
             
         def button_10_plot():
+            path   = "pruebas/prueba14/"
             fig = controller.universe.plot_intention(int(Pages._id))    
-            py.plot(fig, filename = "tpbi.html", auto_open = True)
+            py.plot(fig, filename = path + str(Pages.name).replace(" ", "-") +"tpb_i.html", auto_open = True)
             
         ## All of these files mut de removed
         

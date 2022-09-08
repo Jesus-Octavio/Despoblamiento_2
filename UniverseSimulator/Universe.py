@@ -420,9 +420,9 @@ class Universe():
        'M10A14', 'M15A19', 'M20A24', 'M25A29', 'M30A34', 'M35A39', 'M40A44',
        'M45A49', 'M50A54', 'M55A59']]
             
-            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84',  'H90A94', 'H95A99',
-       'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84',  'M90A94',
-       'M95A99', 'M100YMS']]
+            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84', 'H85A89', 'H90A94',
+       'H95A99', 'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84',
+       'M85A89', 'M90A94', 'M95A99', 'M100YMS']]
     
             mortality = self.mortality_model.predict(df_X_mortality) 
             natality  = self.natality_model.predict(df_X_natality)
@@ -966,166 +966,175 @@ class Universe():
             
             my_copy = population.families["fam_kids"].copy()
             for family in my_copy:
-                if len(family.members) > 0:
-                    #print("NEW FAMILY")
-                    #print("FAMILY LOCATION %s" % family.population_centre.population_name)
-                    dictionaryList = []
-                    new = {}
-                    for member in family.members:
-                        temp = member.intention_hist
-                        #print("MEMBER DICT:")
-                        #print(temp)
+                if family.mig != 1:
+                    if len(family.members) > 0:
+                        #print("NEW FAMILY")
+                        #print("FAMILY LOCATION %s" % family.population_centre.population_name)
+                        dictionaryList = []
+                        new = {}
+                        for member in family.members:
+                            temp = member.intention_hist
+                            #print("MEMBER DICT:")
+                            #print(temp)
+                            #print("\n")
+                            dictionaryList.append(temp)
+                        for key in temp.keys():
+                            new[key] = mean([d[key] for d in dictionaryList ])
+                        #print("MEAN")
+                        #print(new)
                         #print("\n")
-                        dictionaryList.append(temp)
-                    for key in temp.keys():
-                        new[key] = mean([d[key] for d in dictionaryList ])
-                    #print("MEAN")
-                    #print(new)
-                    #print("\n")
-                    #print("Current value for %s (%s) -> %s" %
-                    #  (family.population_centre.population_name,
-                    #   family.population_centre.population_id,
-                    #   str(new[family.population_centre.population_id])))
+                        #print("Current value for %s (%s) -> %s" %
+                        #  (family.population_centre.population_name,
+                        #   family.population_centre.population_id,
+                        #   str(new[family.population_centre.population_id])))
                     
                     
-                    current_pts = new[family.population_centre.population_id]
+                        current_pts = new[family.population_centre.population_id]
                     
-                    my_origin = family.population_centre.population_id
+                        my_origin = family.population_centre.population_id
                     
-                    stored_pts  = dict(sorted(new.items(), key=lambda item: item[1], reverse = True))
-                    rn = np.random.uniform(0, 1)
-                    for key, value in stored_pts.items():
-                        if value >= current_pts:
-                            #print("Possible migration to %s -> %s" % (str(key), str(value)))
-                            if rn >= value:
-                                pass
-                            else:
-                                # Migrate
-                                temp = [*self.population_centres, *self.large_cities]
-                                new_population = [x for x in temp if str(x.population_id) == str(key)][0]
+                        stored_pts  = dict(sorted(new.items(), key=lambda item: item[1], reverse = True))
+                        rn = np.random.uniform(0, 1)
+                        for key, value in stored_pts.items():
+                            if value >= current_pts:
+                                #print("Possible migration to %s -> %s" % (str(key), str(value)))
+                                if rn >= value:
+                                    pass
+                                else:
+                                    # Migrate
+                                    temp = [*self.population_centres, *self.large_cities]
+                                    new_population = [x for x in temp if str(x.population_id) == str(key)][0]
                                 
-                                attr =[str(x.population_id) for x in self.large_cities]
+                                    attr =[str(x.population_id) for x in self.large_cities]
                                 
-                                while family in population.families["fam_kids"]:
-                                    family.remove_family()
+                                    while family in population.families["fam_kids"]:
+                                        family.remove_family()
                                     
                                     
                                     
-                                family.add_family_2(new_population,
+                                    family.add_family_2(new_population,
                                                     df1 = self.df_income_spend,
                                                     df2 = self.df_income_spend_large_cities,
                                                     year = self.year,
                                                     attr = attr)
                                 
-                                with open("Results/kids.csv", "a", newline = "") as file:
-                                    writer = csv.writer(file)
-                                    writer.writerow([1, my_origin, key, self.year])
-                                    
-                                with open("Results/total.csv", "a", newline = "") as file:
-                                    writer = csv.writer(file)
-                                    writer.writerow([len(family.members), my_origin, key, self.year])
-                                
-                                #family.population_centre = population
-                                
-                                #for agent_temp in family.members:
-                                #    interval = myround(agent_temp.age)
-                                #    print("ESTAMOS EN EL MUNICIPIO %s" % population.population_name)
-                                #    print(agent_temp.population_centre.population_name)
-                                #    agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] -= 1
-                                #    agent_temp.remove_agent()
-                                    
-                                #    if family in population.families["fam_kids"]:
-                                #        family.remove_family()
-                                    
-                                #    agent_temp.population_centre = new_population
-                                #    agent_temp.add_agent()
-                                    
-                                #    agent_temp.update_infra()
-                                #    agent_temp.update_eco(df_eco_mun = self.df_income_spend,
-                                #                          df_eco_atr = self.df_income_spend_large_cities)
-                                    
-                                    
-                                #    if new_population not in self.large_cities:
-                                #        agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] += 1
-                                    
-                                #    if family not in  new_population.families["fam_kids"]:
-                                #        family.add_family()
+                                    with open("pruebas/prueba14/kids.csv", "a", newline = "") as file:
+                                        writer = csv.writer(file)
+                                        writer.writerow([1, my_origin, key, self.year])
                                         
-                                 
-                                #with open("Results/kids.csv", "a", newline = "") as file:
-                                #    writer = csv.writer(file)
-                                #    writer.writerow([1, my_origin, key, self.year])
+                                    with open("pruebas/prueba14/total.csv", "a", newline = "") as file:
+                                        writer = csv.writer(file)
+                                        writer.writerow([len(family.members), my_origin, key, self.year])
+                                
+                                    #family.population_centre = population
                                     
-                                #with open("Results/total.csv", "a", newline = "") as file:
-                                #    writer = csv.writer(file)
-                                #    writer.writerow([len(family.members), my_origin, key, self.year])
-                                #print("MIGRACION EFECTUADA")
-                                #print("\n")
-                                break
+                                    #for agent_temp in family.members:
+                                    #    interval = myround(agent_temp.age)
+                                    #    print("ESTAMOS EN EL MUNICIPIO %s" % population.population_name)
+                                    #    print(agent_temp.population_centre.population_name)
+                                    #    agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] -= 1
+                                    #    agent_temp.remove_agent()
+                                        
+                                    #    if family in population.families["fam_kids"]:
+                                    #        family.remove_family()
+                                        
+                                    #    agent_temp.population_centre = new_population
+                                    #    agent_temp.add_agent()
+                                        
+                                    #    agent_temp.update_infra()
+                                    #    agent_temp.update_eco(df_eco_mun = self.df_income_spend,
+                                    #                          df_eco_atr = self.df_income_spend_large_cities)
+                                    
+                                        
+                                    #    if new_population not in self.large_cities:
+                                    #        agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] += 1
+                                        
+                                    #    if family not in  new_population.families["fam_kids"]:
+                                    #        family.add_family()
+                                            
+                                     
+                                    #with open("Results/kids.csv", "a", newline = "") as file:
+                                    #    writer = csv.writer(file)
+                                    #    writer.writerow([1, my_origin, key, self.year])
+                                        
+                                    #with open("Results/total.csv", "a", newline = "") as file:
+                                    #    writer = csv.writer(file)
+                                    #    writer.writerow([len(family.members), my_origin, key, self.year])
+                                    #print("MIGRACION EFECTUADA")
+                                    #print("\n")
+                                    break
                                     
                                 
-                    #print("\n")
-                    #print("\n")
+                            #print("\n")
+                            #print("\n")
                     
             
             
             #print("UNIPERSON FAMILIES")
             my_copy_2 = population.families["fam_one_person"].copy()
             for unifamily in my_copy_2:
-                #print("NEW UNIFAM %s" % unifamily)
-                #print("FAM LOCATION %s" % unifamily.population_centre.population_name)
-                my_origin = unifamily.population_centre.population_id
-                agent_temp = unifamily.members
-                #print("MEM LOCATION %s" % agent_temp.population_centre.population_name)
-                #print("Current value for %s (%s) -> %s" %
-                #      (agent_temp.population_centre.population_name,
-                #       agent_temp.population_centre.population_id,
-                #       str(agent_temp.intention_hist[agent_temp.population_centre.population_id])))
-                
-                current_pts = agent_temp.intention_hist[agent_temp.population_centre.population_id]
-                stored_pts  = dict(sorted(agent_temp.intention_hist.items(), key=lambda item: item[1], reverse = True))
-                rn = np.random.uniform(0,1)
-                for key, value in stored_pts.items():
-                    if value >= current_pts:
-                        #print("Possible migration to %s -> %s" % (str(key), str(value)))
-                        if rn >= value:
-                            pass
-                        else:
-                            # Migrate 
-                            interval = myround(agent_temp.age)
-                            unifamily.population_centre.ages_hist[self.year + agent_temp.sex][interval] -= 1
-                            agent_temp.remove_agent()
-                            unifamily.remove_family()
-                            temp = [*self.population_centres, *self.large_cities]
-                            new_population = [x for x in temp if str(x.population_id) == str(key)][0]
-                            agent_temp.population_centre = new_population
-                            agent_temp.add_agent()
-                            agent_temp.update_infra()
-                            agent_temp.update_eco(df_eco_mun = self.df_income_spend,
-                                                  df_eco_atr = self.df_income_spend_large_cities)
+                if unifamily.mig != 1:
+                    #print("NEW UNIFAM %s" % unifamily)
+                    #print("FAM LOCATION %s" % unifamily.population_centre.population_name)
+                    my_origin = unifamily.population_centre.population_id
+                    agent_temp = unifamily.members
+                    #print("MEM LOCATION %s" % agent_temp.population_centre.population_name)
+                    #print("Current value for %s (%s) -> %s" %
+                    #      (agent_temp.population_centre.population_name,
+                    #       agent_temp.population_centre.population_id,
+                    #       str(agent_temp.intention_hist[agent_temp.population_centre.population_id])))
+                    
+                    current_pts = agent_temp.intention_hist[agent_temp.population_centre.population_id]
+                    stored_pts  = dict(sorted(agent_temp.intention_hist.items(), key=lambda item: item[1], reverse = True))
+                    rn = np.random.uniform(0,1)
+                    for key, value in stored_pts.items():
+                        if value >= current_pts:
+                            #print("Possible migration to %s -> %s" % (str(key), str(value)))
+                            if rn >= value:
+                                pass
+                            else:
+                                # Migrate 
+                                interval = myround(agent_temp.age)
+                                unifamily.population_centre.ages_hist[self.year + agent_temp.sex][interval] -= 1
+                                agent_temp.remove_agent()
+                                unifamily.remove_family()
+                                temp = [*self.population_centres, *self.large_cities]
+                                new_population = [x for x in temp if str(x.population_id) == str(key)][0]
+                                agent_temp.population_centre = new_population
+                                agent_temp.add_agent()
+                                try:
+                                    agent_temp.update_infra()
+                                except: 
+                                    pass
+                                try:
+                                    agent_temp.update_eco(df_eco_mun = self.df_income_spend,
+                                                      df_eco_atr = self.df_income_spend_large_cities)
+                                except:
+                                    pass
                             
-                            unifamily.add_family()
-                            if new_population not in self.large_cities:
-                                agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] += 1
+                                unifamily.add_family()
+                                if new_population not in self.large_cities:
+                                    agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] += 1
                                 
                                 
-                            with open("Results/unip.csv", "a", newline = "") as file:
-                                    writer = csv.writer(file)
-                                    writer.writerow([1, my_origin, key, self.year])
+                                with open("pruebas/prueba14/unip.csv", "a", newline = "") as file:
+                                        writer = csv.writer(file)
+                                        writer.writerow([1, my_origin, key, self.year])
                                     
-                            with open("Results/total.csv", "a", newline = "") as file:
-                                    writer = csv.writer(file)
-                                    writer.writerow([1, my_origin, key, self.year])
+                                with open("pruebas/prueba14/total.csv", "a", newline = "") as file:
+                                        writer = csv.writer(file)
+                                        writer.writerow([1, my_origin, key, self.year])
                 
-                            break
-                #print("\n")
-                #print("\n")
+                                break
+                            #print("\n")
+                            #print("\n")
             
             #break
             
             
             ### UPDATE MORTALITY, NATALITY, .... ###
             #d_args_update = {}
+            for population in self.po
             for column in self.cols_update:
                 if column + self.year in self.df_historic_ages.columns:
                     if column == "NAT":
@@ -1180,9 +1189,9 @@ class Universe():
        'M10A14', 'M15A19', 'M20A24', 'M25A29', 'M30A34', 'M35A39', 'M40A44',
        'M45A49', 'M50A54', 'M55A59']]
             
-            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84', 'H90A94', 'H95A99',
-       'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84', 'M90A94',
-       'M95A99', 'M100YMS']]
+            df_X_mortality = df_X[['H60A64', 'H65A69', 'H70A74', 'H75A79', 'H80A84', 'H85A89', 'H90A94',
+       'H95A99', 'H100MS', 'M60A64', 'M65A69', 'M70A74', 'M75A79', 'M80A84',
+       'M85A89', 'M90A94', 'M95A99', 'M100YMS']]
     
             mortality = self.mortality_model.predict(df_X_mortality) 
             natality  = self.natality_model.predict(df_X_natality)
@@ -1201,9 +1210,15 @@ class Universe():
             population.update_families_hist()
             
             
+        for population in self.population_centres:
+            for family in population.families["fam_kids"]:
+                family.mig = 0
                 
+            for family in population.families["fam_one_person"]:
+                family.mig = 0
             
-        
+       
+       
                
     def remove_person_from_universe(self, agent):
         # METHOD TO REMOVE PEOPLE FROM UNIVERSE (those who die mainly)
@@ -1629,16 +1644,16 @@ class Universe():
                      row = 1, col = 2)
         
         
-        fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB_REAL"],
-                      name = "Población obsservación (SVEG)",
-                      showlegend = True,
-                      legendgroup = "3",
-                      marker = dict(color = "red")),
-                     row = 2, col = 1)
+        #fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB_REAL"],
+        #              name = "Población observación (SVEG)",
+        #              showlegend = True,
+        #              legendgroup = "3",
+        #              marker = dict(color = "red")),
+        #             row = 2, col = 1)
         
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB_REAL_SVG_MIGR"],
-                      name = "Población obsservación (SVEG, MIGR)",
+                      name = "Población observación (SVEG, MIGR)",
                       showlegend = True,
                       legendgroup = "3",
                       marker = dict(color = "orange")),

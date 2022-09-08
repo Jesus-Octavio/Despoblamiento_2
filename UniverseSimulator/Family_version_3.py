@@ -62,13 +62,20 @@ class Family():
         self.population_centre.families["fam_kids"].append(self)
         for agent in self.members:
             interval = myround(agent.age)
-            agent.population_centre.ages_hist[year + agent.sex][interval] -= 1
+            if str(agent.population_centre.population_id) not in attr:
+                agent.population_centre.ages_hist[year + agent.sex][interval] -= 1
             agent.remove_agent()
             agent.population_centre = population
             agent.add_agent()
-            agent.update_infra()
-            agent.update_eco(df_eco_mun = df1,
-                             df_eco_atr = df2)
+            try:
+                agent.update_infra()
+            except:
+                pass
+            try:
+                agent.update_eco(df_eco_mun = df1,
+                                 df_eco_atr = df2)
+            except:
+                pass
             
             if str(agent.population_centre.population_id) not in attr:
                 agent.population_centre.ages_hist[year + agent.sex][interval] += 1
@@ -89,6 +96,7 @@ class Family():
 class Fam_one_person(Family):
     
     def __init__(self, population_centre):
+        self.mig = 0
         self.members = None
         self.population_centre = population_centre
         
@@ -106,6 +114,7 @@ class Fam_one_person(Family):
 class Fam_kids(Family):
     
     def __init__(self, population_centre, kids_limit):
+        self.mig = 0
         self.population_centre = population_centre
         self.kids_limit = kids_limit
         self.members = []

@@ -76,7 +76,7 @@ if __name__ == "__main__":
     path = "Modelos/"
     #keras.models.load_model
     natality_model  = keras.models.load_model(path + "natality_model_subset_ann.h5")
-    mortality_model = load(path + "mortality_model_subset_linreg.joblib")
+    mortality_model = load(path + "mortality_model_subset_linreg_clases.joblib")
     
     # betas: list of 3
     # beta[0] -> slope and height above the sea
@@ -86,15 +86,43 @@ if __name__ == "__main__":
     # gamma: parameter for subjective norm
     
     
-    with open("Results/total.csv", "a", newline = "") as file:
+    betas = list(np.random.uniform(0, 1, 3))
+    #gamma = np.random.uniform(0, 1)
+    gamma = 0.65
+    #theta = np.random.uniform(0, 1)
+    theta = 0.65 #sn
+    #alphas = list(np.random.uniform(0, 1, 3))
+    alphas = [0.001211, 0.004979, 0.004753]
+    
+    print("BETAS %s" % betas)
+    print("GAMMA %s" % gamma)
+    print("THETA %s" % theta)
+    print("ALPHAS %s" % alphas)
+    
+    my_txt = open("pruebas/prueba14/params.txt", "w")
+    
+    for elem in betas:
+        my_txt.write(str(elem) + "\n")
+        
+    my_txt.write(str(gamma)+ "\n")
+    my_txt.write(str(theta)+ "\n")
+    
+    for elem in alphas:
+        my_txt.write(str(elem) + "\n")
+        
+    my_txt.close()
+        
+    
+    
+    with open("pruebas/prueba14/total.csv", "a", newline = "") as file:
         writer = csv.writer(file)
         writer.writerow(["TransactionAmt", "Source", "Target", "Date"])
                 
-    with open("Results/kids.csv", "a", newline = "") as file:
+    with open("pruebas/prueba14/kids.csv", "a", newline = "") as file:
         writer = csv.writer(file)
         writer.writerow(["TransactionAmt", "Source", "Target", "Date"])
                 
-    with open("Results/unip.csv", "a", newline = "") as file:
+    with open("pruebas/prueba14/unip.csv", "a", newline = "") as file:
         writer = csv.writer(file)
         writer.writerow(["TransactionAmt", "Source", "Target", "Date"])
                  
@@ -107,17 +135,17 @@ if __name__ == "__main__":
                            df_income_spend_large_cities = df_income_spend_large_cities,
                            df_social                    = df_social,
                            df_distances                 = df_distances,
-                           betas  = list(np.random.uniform(0, 1, 3)),
-                           gamma  = np.random.uniform(0, 1), 
-                           theta  = np.random.uniform(0, 1),
-                           alphas = list(np.random.uniform(0, 1, 3)),
+                           betas  = betas,
+                           gamma  = gamma, 
+                           theta  = theta,
+                           alphas = alphas,
                            natality_model  = natality_model,
                            mortality_model = mortality_model)
     #my_universe.Print()
 
     
         
-    for i in range(1, 3):
+    for i in range(1, 12):
         my_universe.update()
         #my_universe.Print()
     
