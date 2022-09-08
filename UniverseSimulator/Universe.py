@@ -1018,11 +1018,11 @@ class Universe():
                                                     year = self.year,
                                                     attr = attr)
                                 
-                                    with open("pruebas/prueba14/kids.csv", "a", newline = "") as file:
+                                    with open("pruebas/prueba20/kids.csv", "a", newline = "") as file:
                                         writer = csv.writer(file)
                                         writer.writerow([1, my_origin, key, self.year])
                                         
-                                    with open("pruebas/prueba14/total.csv", "a", newline = "") as file:
+                                    with open("pruebas/prueba20/total.csv", "a", newline = "") as file:
                                         writer = csv.writer(file)
                                         writer.writerow([len(family.members), my_origin, key, self.year])
                                 
@@ -1117,11 +1117,11 @@ class Universe():
                                     agent_temp.population_centre.ages_hist[self.year + agent_temp.sex][interval] += 1
                                 
                                 
-                                with open("pruebas/prueba14/unip.csv", "a", newline = "") as file:
+                                with open("pruebas/prueba20/unip.csv", "a", newline = "") as file:
                                         writer = csv.writer(file)
                                         writer.writerow([1, my_origin, key, self.year])
                                     
-                                with open("pruebas/prueba14/total.csv", "a", newline = "") as file:
+                                with open("pruebas/prueba20/total.csv", "a", newline = "") as file:
                                         writer = csv.writer(file)
                                         writer.writerow([1, my_origin, key, self.year])
                 
@@ -1134,7 +1134,7 @@ class Universe():
             
             ### UPDATE MORTALITY, NATALITY, .... ###
             #d_args_update = {}
-            for population in self.po
+            
             for column in self.cols_update:
                 if column + self.year in self.df_historic_ages.columns:
                     if column == "NAT":
@@ -1598,7 +1598,6 @@ class Universe():
         data  = {"NAT"  : my_population.natality_hist,
                  "MOR"  : my_population.mortality_hist,
                  "POB"  : my_population.population_hist,
-                 
                  "POB_REAL"  : my_population.population_hist_real,
                  "MOR_REAL"  : my_population.mortality_hist_real,
                  "NAT_REAL"  : my_population.natality_hist_real,
@@ -1606,6 +1605,13 @@ class Universe():
                  "YEAR" : my_population.year_hist}
         
         df = pd.DataFrame.from_dict(data)
+        
+        df.to_csv("pruebas/prueba20/test_vegetativo"  + str( my_population.population_name).replace(" ", "-") + ".csv",
+                  index = False)
+        
+        
+        
+        
         
         
         
@@ -1619,14 +1625,14 @@ class Universe():
                       name = "Natalidad observación",
                       showlegend = True,
                       legendgroup = "1",
-                      marker = dict(color = "blue")),
+                      marker = dict(color = "purple")),
                      row = 1, col = 1)
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["NAT"],
                       name = "Natalidad predicción",
                       showlegend = True,
                       legendgroup = "1",
-                      marker = dict(color = "lightblue")),
+                      marker = dict(color = "pink")),
                      row = 1, col = 1)
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["MOR_REAL"],
@@ -1656,20 +1662,21 @@ class Universe():
                       name = "Población observación (SVEG, MIGR)",
                       showlegend = True,
                       legendgroup = "3",
-                      marker = dict(color = "orange")),
+                      marker = dict(color = "red")),
                      row = 2, col = 1)
         
         fig.add_trace(go.Scatter(x = df["YEAR"], y = df["POB"],
                       name = "Población predicción",
                       showlegend = True,
                       legendgroup = "3",
-                      marker = dict(color = "yellow")),
-                     row = 2, col = 1)
+                      marker = dict(color = "orange")),
+                      row = 2, col = 1)
         
-  
+        
+        fig.update_yaxes(rangemode="tozero")
         
         fig.update_layout(
-                    title_text ="Evolución vegetativa en %s" % my_population.population_name 
+                    title_text ="TEST EVOLUCIÓN en %s" % my_population.population_name 
 )
   
         
@@ -1703,6 +1710,11 @@ class Universe():
         df = pd.DataFrame.from_dict(my_population.ages_hist)        
         my_cols = [col for col in df.columns if str(year) in col]
         df = df[my_cols]
+        
+        df.to_csv("pruebas/prueba20/test_piramide"  + str( my_population.population_name).replace(" ", "-") + ".csv")
+        
+        df_temp = pd.DataFrame({"x_m": list(x_m), "x_f" : list(x_f)})
+        df_temp.to_csv("pruebas/prueba20/test_piramide_temp"  + str( my_population.population_name).replace(" ", "-") + ".csv")
 
        
         fig = go.Figure()
