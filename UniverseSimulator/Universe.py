@@ -1171,7 +1171,7 @@ class Universe():
             
             
             #print(population.population_name)
-        
+        for population in self.population_centres:
             ### INVOKE NATALITY AND MORTALITY MODELS ###
             df = pd.DataFrame.from_dict(population.ages_hist)        
             my_cols = [col for col in df.columns if str(self.year) in col]
